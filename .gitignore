@@ -131,3 +131,5 @@ dmypy.json
 #mystuff
 credentials.json
 const.py
+ifit-credentials.json
+token.pickle
