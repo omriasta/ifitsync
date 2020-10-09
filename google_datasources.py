@@ -114,5 +114,23 @@ GOOGLE_DATA_SOURCES = [
             "version": "1.0",
         },
     },
+    {
+        "datasourceid": "raw:com.google.activity.segment:"
+        + ProjectNumber
+        + ":NordicTrack:Commercial2950:100001",
+        "type": "raw",
+        "application": {"name": "ifitsync"},
+        "dataType": {
+            "name": "com.google.activity.segment",
+            "field": [{"format": "integer", "name": "activity"}],
+        },
+        "device": {
+            "type": "unknown",
+            "manufacturer": "NordicTrack",
+            "model": "Commercial2950",
+            "uid": "100001",
+            "version": "1.0",
+        },
+    },
 ]
 

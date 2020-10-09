@@ -355,7 +355,40 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
     except HttpError as error:
         raise error
     print("Uploaded Workout Session data successfully")
+def UploadIfitActivityToGoogle(IfitWorkoutJson):
+    google_datapoint = {}
+    google_datapoint.update(
+        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
+        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000,
+        dataSourceId=GOOGLE_DATA_SOURCES[6]["datasourceid"],
+        point=[],
+    )
 
+    google_datapoint["point"].append(
+        {
+            "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
+            "endTimeNanos": IfitWorkoutJson["end"] * 1000000,            
+            "dataTypeName": "com.google.activity.segment",
+            "value": [{"intVal": 58}],
+        }
+    )
+    
+    datasetId = (
+        str(google_datapoint["minStartTimeNs"])
+        + "-"
+        + str(google_datapoint["maxEndTimeNs"])
+    )
+
+    try:
+        service.users().dataSources().datasets().patch(
+            userId="me",
+            dataSourceId=google_datapoint["dataSourceId"],
+            datasetId=datasetId,
+            body=google_datapoint,
+        ).execute()
+    except HttpError as error:
+        raise error
+    print("Uploaded Workout Activity data successfully")
 
 """ Check if the Google Data Sources don't exist and create them"""
 for x in GOOGLE_DATA_SOURCES:
@@ -375,6 +408,7 @@ for last_workout in HISTORY_JSON:
         UploadIfitStepsToGoogle(last_workout)
         UploadIfitWattsToGoogle(last_workout)
         UploadIfitSessionToGoogle(last_workout)
+        UploadIfitActivityToGoogle(last_workout)
     else:
         print(last_workout["name"] + " already uploaded")
 
