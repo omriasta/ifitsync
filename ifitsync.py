@@ -3,6 +3,7 @@ from get_ifitaccount import FEED_JSON, HISTORY_JSON
 from google_datasources import GOOGLE_DATA_SOURCES
 from googleapiclient.errors import HttpError
 import json
+import time
 
 
 service = main()
@@ -75,20 +76,17 @@ def UploadIfitHrToGoogle(IfitWorkoutJson):
         + "-"
         + str(google_datapoint["maxEndTimeNs"])
     )
-
-    test = (
-        service.users()
-        .dataSources()
-        .datasets()
-        .patch(
+    try:
+        service.users().dataSources().datasets().patch(
             userId="me",
             dataSourceId=google_datapoint["dataSourceId"],
             datasetId=datasetId,
             body=google_datapoint,
-        )
-        .execute()
-    )
-    print(test)
+        ).execute()
+    except HttpError as error:
+        raise error
+    print("Uploaded Workout HR data successfully")
+    
 
 
 def UploadIfitSpeedToGoogle(IfitWorkoutJson):
@@ -127,19 +125,17 @@ def UploadIfitSpeedToGoogle(IfitWorkoutJson):
         + str(google_datapoint["maxEndTimeNs"])
     )
 
-    test = (
-        service.users()
-        .dataSources()
-        .datasets()
-        .patch(
+    try:
+        service.users().dataSources().datasets().patch(
             userId="me",
             dataSourceId=google_datapoint["dataSourceId"],
             datasetId=datasetId,
             body=google_datapoint,
-        )
-        .execute()
-    )
-    print(test)
+            ).execute()
+    except HttpError as error:
+        raise error
+    print("Uploaded Workout Speed data successfully")    
+    
 
 
 def UploadIfitWattsToGoogle(IfitWorkoutJson):
@@ -178,19 +174,17 @@ def UploadIfitWattsToGoogle(IfitWorkoutJson):
         + str(google_datapoint["maxEndTimeNs"])
     )
 
-    test = (
-        service.users()
-        .dataSources()
-        .datasets()
-        .patch(
+    try:
+        service.users().dataSources().datasets().patch(
             userId="me",
             dataSourceId=google_datapoint["dataSourceId"],
             datasetId=datasetId,
             body=google_datapoint,
-        )
-        .execute()
-    )
-    print(test)
+            ).execute()
+    except HttpError as error:
+        raise error
+    print("Uploaded Workout Power(watts) data successfully")
+
 
 
 def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
@@ -232,19 +226,16 @@ def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
         + str(google_datapoint["maxEndTimeNs"])
     )
 
-    test = (
-        service.users()
-        .dataSources()
-        .datasets()
-        .patch(
+    try:
+        service.users().dataSources().datasets().patch(
             userId="me",
             dataSourceId=google_datapoint["dataSourceId"],
             datasetId=datasetId,
             body=google_datapoint,
-        )
-        .execute()
-    )
-    print(test)
+            ).execute()
+    except HttpError as error:
+        raise error
+    print("Uploaded Workout Calorie data successfully")
 
 
 def UploadIfitDistanceToGoogle(IfitWorkoutJson):
@@ -285,19 +276,16 @@ def UploadIfitDistanceToGoogle(IfitWorkoutJson):
         + str(google_datapoint["maxEndTimeNs"])
     )
 
-    test = (
-        service.users()
-        .dataSources()
-        .datasets()
-        .patch(
+    try:
+        service.users().dataSources().datasets().patch(
             userId="me",
             dataSourceId=google_datapoint["dataSourceId"],
             datasetId=datasetId,
             body=google_datapoint,
-        )
-        .execute()
-    )
-    print(test)
+            ).execute()
+    except HttpError as error:
+        raise error
+    print("Uploaded Workout Distance data successfully")
 
 
 def UploadIfitStepsToGoogle(IfitWorkoutJson):
@@ -339,19 +327,16 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
         + str(google_datapoint["maxEndTimeNs"])
     )
 
-    test = (
-        service.users()
-        .dataSources()
-        .datasets()
-        .patch(
+    try:
+        service.users().dataSources().datasets().patch(
             userId="me",
             dataSourceId=google_datapoint["dataSourceId"],
             datasetId=datasetId,
             body=google_datapoint,
-        )
-        .execute()
-    )
-    print(test)
+            ).execute()
+    except HttpError as error:
+        raise error
+    print("Uploaded Workout Steps data successfully")
 
 
 def UploadIfitSessionToGoogle(IfitWorkoutJson):
@@ -365,13 +350,11 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
         activityType=58,
     )
 
-    test = (
-        service.users()
-        .sessions()
-        .update(userId="me", sessionId=IfitWorkoutJson["id"], body=session_body,)
-        .execute()
-    )
-    print(test)
+    try:
+        service.users().sessions().update(userId="me", sessionId=IfitWorkoutJson["id"], body=session_body,).execute()
+    except HttpError as error:
+        raise error
+    print("Uploaded Workout Session data successfully")
 
 
 """ Check if the Google Data Sources don't exist and create them"""
@@ -379,12 +362,26 @@ for x in GOOGLE_DATA_SOURCES:
     if not CheckGoogleDataSourceExists(x["datasourceid"]):
         y = x.pop("datasourceid")
         CreateGoogleDataSource(x)
-#last_workout = HISTORY_JSON[0]
+
+with open('last_run_time.json') as timestamp_file:
+    timestampdict = json.load(timestamp_file)
+last_run_time = timestampdict["last_run_time"]
 for last_workout in HISTORY_JSON:
-	UploadIfitCaloriesToGoogle(last_workout)
-	UploadIfitDistanceToGoogle(last_workout)
-	UploadIfitHrToGoogle(last_workout)
-	UploadIfitSpeedToGoogle(last_workout)
-	UploadIfitStepsToGoogle(last_workout)
-	UploadIfitWattsToGoogle(last_workout)
-	UploadIfitSessionToGoogle(last_workout)
+    if last_workout["start"] > last_run_time:
+        UploadIfitCaloriesToGoogle(last_workout)
+        UploadIfitDistanceToGoogle(last_workout)
+        UploadIfitHrToGoogle(last_workout)
+        UploadIfitSpeedToGoogle(last_workout)
+        UploadIfitStepsToGoogle(last_workout)
+        UploadIfitWattsToGoogle(last_workout)
+        UploadIfitSessionToGoogle(last_workout)
+    else:
+        print(last_workout["name"] + " already uploaded")
+
+
+
+secondssinceepoch = round(time.time() * 1000)
+timestampjson = {}
+timestampjson["last_run_time"] = secondssinceepoch
+with open('last_run_time.json', 'w') as timestamp_file:
+    json.dump(timestampjson, timestamp_file)
