@@ -362,7 +362,7 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
         startTimeMillis=IfitWorkoutJson["start"],
         endTimeMillis=IfitWorkoutJson["end"],
         application={"name": "iFit-Sync"},
-        activityType=88,
+        activityType=58,
     )
 
     test = (
@@ -379,12 +379,12 @@ for x in GOOGLE_DATA_SOURCES:
     if not CheckGoogleDataSourceExists(x["datasourceid"]):
         y = x.pop("datasourceid")
         CreateGoogleDataSource(x)
-
+#last_workout = HISTORY_JSON[0]
 for last_workout in HISTORY_JSON:
-    UploadIfitCaloriesToGoogle(last_workout)
-    UploadIfitDistanceToGoogle(last_workout)
-    UploadIfitHrToGoogle(last_workout)
-    UploadIfitSpeedToGoogle(last_workout)
-    UploadIfitStepsToGoogle(last_workout)
-    UploadIfitWattsToGoogle(last_workout)
-    UploadIfitSessionToGoogle(last_workout)
+	UploadIfitCaloriesToGoogle(last_workout)
+	UploadIfitDistanceToGoogle(last_workout)
+	UploadIfitHrToGoogle(last_workout)
+	UploadIfitSpeedToGoogle(last_workout)
+	UploadIfitStepsToGoogle(last_workout)
+	UploadIfitWattsToGoogle(last_workout)
+	UploadIfitSessionToGoogle(last_workout)
