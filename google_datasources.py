@@ -1,3 +1,8 @@
+'''This file stores templates for all the different Google Fit DataSources
+Each type of data uploaded to Google Fit requires a matching datasource,
+if iFit will open their API it should be possible to get the treadmill make and model
+and replace the fixed ones here, you can change the make and model here manually until
+that is done'''
 import json
 
 with open("credentials.json") as credentials:

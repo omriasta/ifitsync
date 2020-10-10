@@ -1,3 +1,6 @@
+'''This file will request access to your Google Account and store/refresh tokens to allow access. 
+If you are running on a headless machine without a browser, run this on a desktop first and then 
+copy the token.pickle file to the folder on the destination machine'''
 from __future__ import print_function
 import pickle
 import os.path

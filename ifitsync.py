@@ -7,6 +7,7 @@ import time
 
 
 service = main()
+'''Assign Workout Name and ID from feed to History'''
 for x in HISTORY_JSON:
     workout_id = x["id"]
     workout_name = next(item for item in FEED_JSON if item["id"] == workout_id)["title"]
@@ -14,7 +15,7 @@ for x in HISTORY_JSON:
     x["name"] = workout_name
     x["date"] = workout_date
 
-
+'''Function to check if Google DataSource Exists'''
 def CheckGoogleDataSourceExists(dataSourceId):
     try:
         service.users().dataSources().get(
@@ -28,7 +29,7 @@ def CheckGoogleDataSourceExists(dataSourceId):
     else:
         return True
 
-
+'''Function to create a Google DataSource'''
 def CreateGoogleDataSource(GoogleDataSourceJson):
     try:
         service.users().dataSources().create(
@@ -40,7 +41,7 @@ def CreateGoogleDataSource(GoogleDataSourceJson):
 
     print("Datasource successfully created")
 
-
+'''Function that Uploads HR data from an iFit Workout to Google'''
 def UploadIfitHrToGoogle(IfitWorkoutJson):
     google_datapoint = {}
     google_datapoint.update(
@@ -88,7 +89,7 @@ def UploadIfitHrToGoogle(IfitWorkoutJson):
     print("Uploaded Workout HR data successfully")
     
 
-
+'''Function that Uploads Speed Data from an iFit Workout to Google Fit'''
 def UploadIfitSpeedToGoogle(IfitWorkoutJson):
     google_datapoint = {}
     google_datapoint.update(
@@ -137,7 +138,7 @@ def UploadIfitSpeedToGoogle(IfitWorkoutJson):
     print("Uploaded Workout Speed data successfully")    
     
 
-
+'''Function that Uploads Power data from an iFit workout to Google Fit'''
 def UploadIfitWattsToGoogle(IfitWorkoutJson):
     google_datapoint = {}
     google_datapoint.update(
@@ -186,7 +187,7 @@ def UploadIfitWattsToGoogle(IfitWorkoutJson):
     print("Uploaded Workout Power(watts) data successfully")
 
 
-
+'''Function that Uploads Calorie data from an iFit workout to Google Fit'''
 def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
     google_datapoint = {}
     google_datapoint.update(
@@ -204,6 +205,7 @@ def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
             "value": [{"fpVal": IfitWorkoutJson["summary"]["total_calories"]}],
         }
     )
+    '''The below section commented out as Google Fit throws data out of range for some of the points, instead uploading totals for the workout'''
     """
     for index, x in zip(
         IfitWorkoutJson["stats"]["calories"], IfitWorkoutJson["stats"]["calories"][1:]
@@ -237,7 +239,7 @@ def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
         raise error
     print("Uploaded Workout Calorie data successfully")
 
-
+'''Function that uploads distance data from iFit workout to Google Fit'''
 def UploadIfitDistanceToGoogle(IfitWorkoutJson):
     google_datapoint = {}
     google_datapoint.update(
@@ -287,7 +289,7 @@ def UploadIfitDistanceToGoogle(IfitWorkoutJson):
         raise error
     print("Uploaded Workout Distance data successfully")
 
-
+'''Function that uploads Step data from iFit workout to Google Fit'''
 def UploadIfitStepsToGoogle(IfitWorkoutJson):
     google_datapoint = {}
     google_datapoint.update(
@@ -338,7 +340,7 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
         raise error
     print("Uploaded Workout Steps data successfully")
 
-
+'''Function that creates a workout on Google Fit and gives it a name and the activity type'''
 def UploadIfitSessionToGoogle(IfitWorkoutJson):
     session_body = {}
     session_body.update(
@@ -355,6 +357,7 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
     except HttpError as error:
         raise error
     print("Uploaded Workout Session data successfully")
+'''This function populates the Active Time for the Google Fit Workout created'''
 def UploadIfitActivityToGoogle(IfitWorkoutJson):
     google_datapoint = {}
     google_datapoint.update(
@@ -395,7 +398,7 @@ for x in GOOGLE_DATA_SOURCES:
     if not CheckGoogleDataSourceExists(x["datasourceid"]):
         y = x.pop("datasourceid")
         CreateGoogleDataSource(x)
-
+'''Function to check when the last time the script was run and upload just the workouts that have been added since'''
 with open('last_run_time.json') as timestamp_file:
     timestampdict = json.load(timestamp_file)
 last_run_time = timestampdict["last_run_time"]
@@ -413,7 +416,7 @@ for last_workout in HISTORY_JSON:
         print(last_workout["name"] + " already uploaded")
 
 
-
+'''This creates the timestamp that will show when the script ran last'''
 secondssinceepoch = round(time.time() * 1000)
 timestampjson = {}
 timestampjson["last_run_time"] = secondssinceepoch
