@@ -120,15 +120,12 @@ GOOGLE_DATA_SOURCES = [
         },
     },
     {
-        "datasourceid": "raw:com.google.activity.segment:"
+        "datasourceid": "raw:com.google.location.sample:"
         + ProjectNumber
         + ":NordicTrack:Commercial2950:100001",
         "type": "raw",
         "application": {"name": "ifitsync"},
-        "dataType": {
-            "name": "com.google.activity.segment",
-            "field": [{"format": "integer", "name": "activity"}],
-        },
+        "dataType": {"name": "com.google.location.sample"},
         "device": {
             "type": "unknown",
             "manufacturer": "NordicTrack",
