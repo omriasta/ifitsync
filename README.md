@@ -33,7 +33,19 @@ A browser should open and prompt you to sign in to google and grant access to a 
 
 Close the browser when prompted and wait for the script to continue
 
-You should see all the data that is being uploaded to google fit, I left this on for anyone troubleshooting until some error catching will be written
+You should see the results of uploaded datasets for each aspect of each workout.
 
 After you go through this once, you will not be prompted for credentials again as the script will now use refresh tokens for both google and ifit.
 
+Currently supports uploading the following:
+- Heart Rate which is sampled throughout the workout
+- Speed sampled throughout the workout
+- Power in watts sampled throughout the workout
+- Calories expended, this is uploaded as a total for the entire workout
+- Distance sampled throughout the workout
+- Step count, this is uploaded as a total for the entire workout
+- Workout name taken from iFit
+
+The summarized values are due to Google Fit API not accepting some of the values provided by iFit because they are "Out of Range"
+Currently Elevation and Incline data are not imported. I believe that Google will not allow to import altitude on it's own without Lat/Lon coordinates which can't be the same for different altitudes.
+Google allows creating "Custom Data types" for this but I am not sure if it's woth the effort.
