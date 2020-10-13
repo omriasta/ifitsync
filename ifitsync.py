@@ -15,8 +15,9 @@ for x in HISTORY_JSON:
     x["name"] = workout_name
     x["date"] = workout_date
 
-'''Function to check if Google DataSource Exists'''
+
 def CheckGoogleDataSourceExists(dataSourceId):
+    '''Function to check if Google DataSource Exists'''
     try:
         service.users().dataSources().get(
             userId="me", dataSourceId=dataSourceId
@@ -29,8 +30,9 @@ def CheckGoogleDataSourceExists(dataSourceId):
     else:
         return True
 
-'''Function to create a Google DataSource'''
+
 def CreateGoogleDataSource(GoogleDataSourceJson):
+    '''Function to create a Google DataSource'''
     try:
         service.users().dataSources().create(
             userId="me", body=GoogleDataSourceJson
@@ -41,8 +43,9 @@ def CreateGoogleDataSource(GoogleDataSourceJson):
 
     print("Datasource successfully created")
 
-'''Function that Uploads HR data from an iFit Workout to Google'''
+
 def UploadIfitHrToGoogle(IfitWorkoutJson):
+    '''Function that Uploads HR data from an iFit Workout to Google'''
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
@@ -89,8 +92,9 @@ def UploadIfitHrToGoogle(IfitWorkoutJson):
     print("Uploaded Workout HR data successfully")
     
 
-'''Function that Uploads Speed Data from an iFit Workout to Google Fit'''
+
 def UploadIfitSpeedToGoogle(IfitWorkoutJson):
+    '''Function that Uploads Speed Data from an iFit Workout to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
@@ -138,8 +142,9 @@ def UploadIfitSpeedToGoogle(IfitWorkoutJson):
     print("Uploaded Workout Speed data successfully")    
     
 
-'''Function that Uploads Power data from an iFit workout to Google Fit'''
+
 def UploadIfitWattsToGoogle(IfitWorkoutJson):
+    '''Function that Uploads Power data from an iFit workout to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
@@ -187,8 +192,9 @@ def UploadIfitWattsToGoogle(IfitWorkoutJson):
     print("Uploaded Workout Power(watts) data successfully")
 
 
-'''Function that Uploads Calorie data from an iFit workout to Google Fit'''
+
 def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
+    '''Function that Uploads Calorie data from an iFit workout to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
@@ -239,8 +245,9 @@ def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
         raise error
     print("Uploaded Workout Calorie data successfully")
 
-'''Function that uploads distance data from iFit workout to Google Fit'''
+
 def UploadIfitDistanceToGoogle(IfitWorkoutJson):
+    '''Function that uploads distance data from iFit workout to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
@@ -289,8 +296,9 @@ def UploadIfitDistanceToGoogle(IfitWorkoutJson):
         raise error
     print("Uploaded Workout Distance data successfully")
 
-'''Function that uploads Step data from iFit workout to Google Fit'''
+
 def UploadIfitStepsToGoogle(IfitWorkoutJson):
+    '''Function that uploads Step data from iFit workout to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
@@ -340,8 +348,9 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
         raise error
     print("Uploaded Workout Steps data successfully")
 
-'''Function that creates a workout on Google Fit and gives it a name and the activity type'''
+
 def UploadIfitSessionToGoogle(IfitWorkoutJson):
+    '''Function that creates a workout on Google Fit and gives it a name and the activity type'''
     session_body = {}
     session_body.update(
         id=IfitWorkoutJson["id"],
@@ -357,8 +366,9 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
     except HttpError as error:
         raise error
     print("Uploaded Workout Session data successfully")
-'''This function populates the Active Time for the Google Fit Workout created'''
+
 def UploadIfitActivityToGoogle(IfitWorkoutJson):
+    '''This function populates the Active Time for the Google Fit Workout created'''
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
@@ -393,6 +403,7 @@ def UploadIfitActivityToGoogle(IfitWorkoutJson):
         raise error
     print("Uploaded Workout Activity data successfully")
 def UploadIfitInclineToGoogle(IfitWorkoutJson):
+    '''Function to Upload Incline data from iFit to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
@@ -430,6 +441,7 @@ def UploadIfitInclineToGoogle(IfitWorkoutJson):
     print("Uploaded Workout Incline data successfully")    
 
 def UploadIfitElevationToGoogle(IfitWorkoutJson):
+    '''Function to Upload Elevation data from iFit to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson["start"] * 1000000,

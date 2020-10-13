@@ -45,7 +45,7 @@ Currently supports uploading the following:
 - Distance sampled throughout the workout
 - Step count, this is uploaded as a total for the entire workout
 - Workout name taken from iFit
+- Elevation Data in Meters (as a custom datatype)
+- Treadmill Incline Degrees (as a custom datatype)
 
 The summarized values are due to Google Fit API not accepting some of the values provided by iFit because they are "Out of Range"
-Currently Elevation and Incline data are not imported. I believe that Google will not allow to import altitude on it's own without Lat/Lon coordinates which can't be the same for different altitudes.
-Google allows creating "Custom Data types" for this but I am not sure if it's woth the effort.
