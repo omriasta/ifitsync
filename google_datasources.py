@@ -120,6 +120,24 @@ GOOGLE_DATA_SOURCES = [
         },
     },
     {
+        "datasourceid": "raw:com.google.activity.segment:"
+        + ProjectNumber
+        + ":NordicTrack:Commercial2950:100001",
+        "type": "raw",
+        "application": {"name": "ifitsync"},
+        "dataType": {
+            "name": "com.google.activity.segment",
+            "field": [{"format": "integer", "name": "activity"}],
+        },
+        "device": {
+            "type": "unknown",
+            "manufacturer": "NordicTrack",
+            "model": "Commercial2950",
+            "uid": "100001",
+            "version": "1.0",
+        },
+    },
+    {
         "datasourceid": "raw:com.google.location.sample:"
         + ProjectNumber
         + ":NordicTrack:Commercial2950:100001",
@@ -134,5 +152,47 @@ GOOGLE_DATA_SOURCES = [
             "version": "1.0",
         },
     },
+    {
+  "datasourceid": "raw:com.ifitsync.treadmillincline.degrees:"
+  + ProjectNumber
+  + ":TreadmillIncline",
+  "dataStreamName": "TreadmillIncline",
+  "type": "raw",
+  "application": {
+    "detailsUrl": "https://github.com/omriasta/ifitsync",
+    "name": "Treadmill Incline Degrees",
+    "version": "1"
+  },
+  "dataType": {
+    "name": "com.ifitsync.treadmillincline.degrees",
+    "field": [
+     {
+      "name": "treadmill_incline_degrees",
+      "format": "floatPoint"
+     }
+    ]
+   }
+    },
+    {
+  "datasourceid": "raw:com.ifitsync.treadmill.elevation:"
+  + ProjectNumber
+  + ":TreadmillElevation",
+  "dataStreamName": "TreadmillElevation",
+  "type": "raw",
+  "application": {
+    "detailsUrl": "https://github.com/omriasta/ifitsync",
+    "name": "Treadmill Elevation Meters",
+    "version": "1"
+  },
+  "dataType": {
+    "name": "com.ifitsync.treadmill.elevation",
+    "field": [
+     {
+      "name": "treadmill_elevation_meters",
+      "format": "floatPoint"
+     }
+    ]
+   }
+    }
 ]
 

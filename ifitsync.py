@@ -392,6 +392,79 @@ def UploadIfitActivityToGoogle(IfitWorkoutJson):
     except HttpError as error:
         raise error
     print("Uploaded Workout Activity data successfully")
+def UploadIfitInclineToGoogle(IfitWorkoutJson):
+    google_datapoint = {}
+    google_datapoint.update(
+        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
+        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000 + 1,
+        dataSourceId=GOOGLE_DATA_SOURCES[8]["datasourceid"],
+        point=[],
+    )
+
+
+    for x in IfitWorkoutJson["stats"]["incline"][1:]:
+        google_datapoint["point"].append(
+            {
+                "startTimeNanos": IfitWorkoutJson["start"] * 1000000 + x["offset"] * 1000000,
+                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                + x["offset"] * 1000000 + 1,
+                "dataTypeName": "com.ifitsync.treadmillincline.degrees",
+                "value": [{"fpVal": x["value"]}],
+            }
+        )
+    datasetId = (
+        str(google_datapoint["minStartTimeNs"])
+        + "-"
+        + str(google_datapoint["maxEndTimeNs"])
+    )
+
+    try:
+        service.users().dataSources().datasets().patch(
+            userId="me",
+            dataSourceId=google_datapoint["dataSourceId"],
+            datasetId=datasetId,
+            body=google_datapoint,
+            ).execute()
+    except HttpError as error:
+        raise error
+    print("Uploaded Workout Incline data successfully")    
+
+def UploadIfitElevationToGoogle(IfitWorkoutJson):
+    google_datapoint = {}
+    google_datapoint.update(
+        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
+        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000 + 1,
+        dataSourceId=GOOGLE_DATA_SOURCES[9]["datasourceid"],
+        point=[],
+    )
+
+
+    for x in IfitWorkoutJson["stats"]["elevation"][1:]:
+        google_datapoint["point"].append(
+            {
+                "startTimeNanos": IfitWorkoutJson["start"] * 1000000 + x["offset"] * 1000000,
+                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                + x["offset"] * 1000000 + 1,
+                "dataTypeName": "com.ifitsync.treadmill.elevation",
+                "value": [{"fpVal": x["value"]}],
+            }
+        )
+    datasetId = (
+        str(google_datapoint["minStartTimeNs"])
+        + "-"
+        + str(google_datapoint["maxEndTimeNs"])
+    )
+
+    try:
+        service.users().dataSources().datasets().patch(
+            userId="me",
+            dataSourceId=google_datapoint["dataSourceId"],
+            datasetId=datasetId,
+            body=google_datapoint,
+            ).execute()
+    except HttpError as error:
+        raise error
+    print("Uploaded Workout Elevation data successfully")   
 
 """ Check if the Google Data Sources don't exist and create them"""
 for x in GOOGLE_DATA_SOURCES:
@@ -412,6 +485,8 @@ for last_workout in HISTORY_JSON:
         UploadIfitWattsToGoogle(last_workout)
         UploadIfitSessionToGoogle(last_workout)
         UploadIfitActivityToGoogle(last_workout)
+        UploadIfitInclineToGoogle(last_workout)
+        UploadIfitElevationToGoogle(last_workout)
     else:
         print(last_workout["name"] + " already uploaded")
 

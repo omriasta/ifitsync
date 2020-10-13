@@ -134,4 +134,5 @@ const.py
 ifit-credentials.json
 token.pickle
 last_run_time.json
+test.py
 
