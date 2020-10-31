@@ -1,12 +1,33 @@
 from get_googleaccount import main
-from get_ifitaccount import FEED_JSON, HISTORY_JSON
+from get_ifitaccount import FEED_JSON, HISTORY_JSON, IFIT_HIST_HEADERS
 from google_datasources import GOOGLE_DATA_SOURCES
 from googleapiclient.errors import HttpError
 import json
 import time
+import requests
+import math
 
 
 service = main()
+
+def closest(lst, K): 
+      
+    return lst[min(range(len(lst)), key = lambda i: abs(lst[i]-K))] 
+
+def haversine(coord1, coord2):
+    R = 6372800  # Earth radius in meters
+    lon1, lat1, *args = coord1
+    lon2, lat2, *args = coord2
+    
+    phi1, phi2 = math.radians(lat1), math.radians(lat2) 
+    dphi       = math.radians(lat2 - lat1)
+    dlambda    = math.radians(lon2 - lon1)
+    
+    a = math.sin(dphi/2)**2 + \
+        math.cos(phi1)*math.cos(phi2)*math.sin(dlambda/2)**2
+    
+    return 2*R*math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
 '''Assign Workout Name and ID from feed to History'''
 for x in HISTORY_JSON:
     workout_id = x["id"]
@@ -296,6 +317,121 @@ def UploadIfitDistanceToGoogle(IfitWorkoutJson):
         raise error
     print("Uploaded Workout Distance data successfully")
 
+def UploadIfitGPSToGoogle(IfitWorkoutJson):
+    '''Function that uploads distance data from iFit workout to Google Fit'''
+    '''Create a List with Coordinates and Distances correlating'''
+    WORKOUT_DETAILS_URL = "https://api.ifit.com/v1/workouts/" + IfitWorkoutJson["workout_id"]
+    WORKOUT_DETAILS = requests.get(WORKOUT_DETAILS_URL, headers=IFIT_HIST_HEADERS).json()
+    COORDINATES_WITH_DISTANCE = []
+    sum = 0
+    for coordinate, next_coordinate in zip(WORKOUT_DETAILS["geo"]["path"]["coordinates"], WORKOUT_DETAILS["geo"]["path"]["coordinates"][1:]):
+        distance_between_GPS = haversine(next_coordinate, coordinate)
+        next_coordinate.append(distance_between_GPS)
+        sum = sum + next_coordinate[2]
+        distance_ran = {}
+        distance_ran["latitude"] = next_coordinate[1]
+        distance_ran["longitude"] = next_coordinate[0]
+        distance_ran["distance"] = sum
+        COORDINATES_WITH_DISTANCE.append(distance_ran)
+
+    '''Create a list with distances and timestamps'''
+
+    DISTANCE_WITH_TIMESTAMP = []
+    if len(IfitWorkoutJson["stats"]["elevation"]) != 0:
+        for x, y in zip(IfitWorkoutJson["stats"]["meters"], IfitWorkoutJson["stats"]["elevation"]):
+            timestamp_distance = {}
+            timestamp_distance["timestamp"] = IfitWorkoutJson["start"] * 1000000 + x["offset"]
+            timestamp_distance["distance"] = x["value"]
+            timestamp_distance["elevation"] = y["value"]
+            DISTANCE_WITH_TIMESTAMP.append(timestamp_distance)
+    else:
+        for x in IfitWorkoutJson["stats"]["meters"]:
+            timestamp_distance = {}
+            timestamp_distance["timestamp"] = IfitWorkoutJson["start"] * 1000000 + x["offset"]
+            timestamp_distance["distance"] = x["value"]         
+            DISTANCE_WITH_TIMESTAMP.append(timestamp_distance)
+
+    '''Remove excess GPS points that were not actually arrived at'''
+    actual_run_distance = DISTANCE_WITH_TIMESTAMP[-1]["distance"]
+    for x in COORDINATES_WITH_DISTANCE:
+        if x["distance"] > actual_run_distance:
+            n = COORDINATES_WITH_DISTANCE.index(x)
+            COORDINATES_WITH_DISTANCE.pop(n)
+    ''' Create a list of distances only to get index of correct entry'''
+    DISTANCE_LIST = []
+    for x in DISTANCE_WITH_TIMESTAMP:
+        DISTANCE_LIST.append(x["distance"])
+
+    ''' Create a List of timestamps with Coordinates'''
+    COORDINATES_WITH_TIMESTAMPS = []
+    for x in COORDINATES_WITH_DISTANCE:
+        closest_value = closest(DISTANCE_LIST, x["distance"])
+        index_closest_value = DISTANCE_LIST.index(closest_value)
+        item = {}
+        item["latitude"] = x["latitude"]
+        item["longitude"] = x["longitude"]
+        item["timestamp"] = DISTANCE_WITH_TIMESTAMP[index_closest_value]["timestamp"]
+        item["elevation"] = DISTANCE_WITH_TIMESTAMP[index_closest_value]["elevation"]
+        COORDINATES_WITH_TIMESTAMPS.append(item)
+
+    if not WORKOUT_DETAILS["has_geo_data"]:
+        print("No Geo Data for workout")
+    else:
+        google_datapoint = {}
+        google_datapoint.update(
+            minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
+            maxEndTimeNs=IfitWorkoutJson["end"] * 1000000,
+            dataSourceId=GOOGLE_DATA_SOURCES[7]["datasourceid"],
+            point=[],
+        )
+
+        google_datapoint["point"].append(
+            {
+                "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
+                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                + IfitWorkoutJson["stats"]["meters"][0]["offset"],
+                "dataTypeName": "com.google.location.sample",
+                "value": [{"fpVal": WORKOUT_DETAILS["geo"]["path"]["coordinates"][0][1]},{"fpVal": WORKOUT_DETAILS["geo"]["path"]["coordinates"][0][0]}, {"fpVal": 5}, {"fpVal": 0}],
+            }
+        )
+        if len(IfitWorkoutJson["stats"]["elevation"]) != 0:
+            for x in COORDINATES_WITH_TIMESTAMPS:
+                google_datapoint["point"].append(
+                    {
+                        "startTimeNanos": x["timestamp"],
+                        "endTimeNanos": x["timestamp"] + 1,
+                        "dataTypeName": "com.google.location.sample",
+                        "value": [{"fpVal": x["latitude"]}, {"fpVal": x["longitude"]}, {"fpVal": 5}, {"fpVal": x["elevation"]}],
+                    }
+                )
+        else:
+            for x in COORDINATES_WITH_TIMESTAMPS:
+                google_datapoint["point"].append(
+                    {
+                        "startTimeNanos": x["timestamp"],
+                        "endTimeNanos": x["timestamp"] + 1,
+                        "dataTypeName": "com.google.location.sample",
+                        "value": [{"fpVal": x["latitude"]}, {"fpVal": x["longitude"]}, {"fpVal": 5}],
+                    }
+                )
+
+        datasetId = (
+            str(google_datapoint["minStartTimeNs"])
+            + "-"
+            + str(google_datapoint["maxEndTimeNs"])
+        )
+
+        try:
+            service.users().dataSources().datasets().patch(
+                userId="me",
+                dataSourceId=google_datapoint["dataSourceId"],
+                datasetId=datasetId,
+                body=google_datapoint,
+                ).execute()
+        except HttpError as error:
+            raise error
+        print("Uploaded Workout GPS data successfully")
+
 
 def UploadIfitStepsToGoogle(IfitWorkoutJson):
     '''Function that uploads Step data from iFit workout to Google Fit'''
@@ -499,6 +635,7 @@ for last_workout in HISTORY_JSON:
         UploadIfitActivityToGoogle(last_workout)
         UploadIfitInclineToGoogle(last_workout)
         UploadIfitElevationToGoogle(last_workout)
+        UploadIfitGPSToGoogle(last_workout)
     else:
         print(last_workout["name"] + " already uploaded")
 
