@@ -356,7 +356,6 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
     for x in COORDINATES_WITH_DISTANCE:
         if x["distance"] > actual_run_distance:
             n = COORDINATES_WITH_DISTANCE.index(x)
-            print(x["distance"], actual_run_distance)
             COORDINATES_WITH_DISTANCE.pop(n)
     ''' Create a list of distances only to get index of correct entry'''
     DISTANCE_LIST = []
