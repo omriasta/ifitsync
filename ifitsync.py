@@ -503,7 +503,7 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
         startTimeMillis=IfitWorkoutJson["start"],
         endTimeMillis=IfitWorkoutJson["end"],
         application={"name": "iFit-Sync"},
-        activityType=58,
+        activityType=8,
     )
 
     try:
@@ -527,7 +527,7 @@ def UploadIfitActivityToGoogle(IfitWorkoutJson):
             "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
             "endTimeNanos": IfitWorkoutJson["end"] * 1000000,            
             "dataTypeName": "com.google.activity.segment",
-            "value": [{"intVal": 58}],
+            "value": [{"intVal": 8}],
         }
     )
     
