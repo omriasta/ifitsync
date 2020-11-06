@@ -79,7 +79,7 @@ def UploadIfitHrToGoogle(IfitWorkoutJson):
         {
             "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
             "endTimeNanos": IfitWorkoutJson["start"] * 1000000
-            + IfitWorkoutJson["stats"]["bpm"][0]["offset"],
+            + IfitWorkoutJson["stats"]["bpm"][0]["offset"] * 1000000,
             "dataTypeName": "com.google.heart_rate.bpm",
             "value": [{"fpVal": IfitWorkoutJson["stats"]["bpm"][0]["value"]}],
         }
@@ -128,7 +128,7 @@ def UploadIfitSpeedToGoogle(IfitWorkoutJson):
         {
             "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
             "endTimeNanos": IfitWorkoutJson["start"] * 1000000
-            + IfitWorkoutJson["stats"]["mps"][0]["offset"],
+            + IfitWorkoutJson["stats"]["mps"][0]["offset"] * 1000000,
             "dataTypeName": "com.google.speed",
             "value": [{"fpVal": IfitWorkoutJson["stats"]["mps"][0]["value"]}],
         }
@@ -178,7 +178,7 @@ def UploadIfitWattsToGoogle(IfitWorkoutJson):
         {
             "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
             "endTimeNanos": IfitWorkoutJson["start"] * 1000000
-            + IfitWorkoutJson["stats"]["watts"][0]["offset"],
+            + IfitWorkoutJson["stats"]["watts"][0]["offset"] * 1000000,
             "dataTypeName": "com.google.power.sample",
             "value": [{"fpVal": IfitWorkoutJson["stats"]["watts"][0]["value"]}],
         }
@@ -281,7 +281,7 @@ def UploadIfitDistanceToGoogle(IfitWorkoutJson):
         {
             "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
             "endTimeNanos": IfitWorkoutJson["start"] * 1000000
-            + IfitWorkoutJson["stats"]["meters"][0]["offset"],
+            + IfitWorkoutJson["stats"]["meters"][0]["offset"] * 1000000,
             "dataTypeName": "com.google.distance.delta",
             "value": [{"fpVal": IfitWorkoutJson["stats"]["meters"][0]["value"]}],
         }
@@ -347,7 +347,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
     ELEVATION_WITH_TIMESTAMP = []
     for x in IfitWorkoutJson["stats"]["elevation"]:
         timestamp_elevation = {}
-        timestamp_elevation["timestamp"] = IfitWorkoutJson["start"] * 1000000 + x["offset"]
+        timestamp_elevation["timestamp"] = IfitWorkoutJson["start"] * 1000000 + x["offset"] * 1000000
         timestamp_elevation["elevation"] = x["value"]
         ELEVATION_WITH_TIMESTAMP.append(timestamp_elevation)    
 
@@ -398,7 +398,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
             {
                 "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
                 "endTimeNanos": IfitWorkoutJson["start"] * 1000000
-                + IfitWorkoutJson["stats"]["meters"][0]["offset"],
+                + IfitWorkoutJson["stats"]["meters"][0]["offset"] * 1000000,
                 "dataTypeName": "com.google.location.sample",
                 "value": [{"fpVal": WORKOUT_DETAILS["geo"]["path"]["coordinates"][0][1]},{"fpVal": WORKOUT_DETAILS["geo"]["path"]["coordinates"][0][0]}, {"fpVal": 5}, {"fpVal": 0}],
             }
@@ -413,6 +413,14 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
                         "value": [{"fpVal": x["latitude"]}, {"fpVal": x["longitude"]}, {"fpVal": 5}, {"fpVal": x["elevation"]}],
                     }
                 )
+            google_datapoint["point"].append(
+                {
+                    "startTimeNanos": IfitWorkoutJson["end"] * 1000000 - 1,
+                    "endTimeNanos": IfitWorkoutJson["end"] * 1000000,
+                    "dataTypeName": "com.google.location.sample",
+                    "value": [{"fpVal": COORDINATES_WITH_TIMESTAMPS[-1]["latitude"]},{"fpVal": COORDINATES_WITH_TIMESTAMPS[-1]["longitude"]}, {"fpVal": 5}, {"fpVal": COORDINATES_WITH_TIMESTAMPS[-1]["elevation"]}],
+                }
+            )
         else:
             for x in COORDINATES_WITH_TIMESTAMPS:
                 google_datapoint["point"].append(
@@ -423,6 +431,14 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
                         "value": [{"fpVal": x["latitude"]}, {"fpVal": x["longitude"]}, {"fpVal": 5}],
                     }
                 )
+            google_datapoint["point"].append(
+                {
+                    "startTimeNanos": IfitWorkoutJson["end"] * 1000000 - 1,
+                    "endTimeNanos": IfitWorkoutJson["end"] * 1000000,
+                    "dataTypeName": "com.google.location.sample",
+                    "value": [{"fpVal": COORDINATES_WITH_TIMESTAMPS[-1]["latitude"]},{"fpVal": COORDINATES_WITH_TIMESTAMPS[-1]["longitude"]}, {"fpVal": 5}, {"fpVal": 0}],
+                }
+            )
 
         datasetId = (
             str(google_datapoint["minStartTimeNs"])

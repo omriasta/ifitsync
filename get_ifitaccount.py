@@ -79,7 +79,7 @@ IFIT_USER_INFO = requests.get("https://api.ifit.com/v1/me", headers=IFIT_HIST_HE
 IFIT_USER_DICT = IFIT_USER_INFO.json()
 IFIT_USER_ID = IFIT_USER_DICT["id"]
 '''Uncomment the first URL and comment out the second if you need to bulk upload all history'''
-#IFIT_HIST_URL = "https://api.ifit.com/v1/activity_logs
+#IFIT_HIST_URL = "https://api.ifit.com/v1/activity_logs"
 IFIT_HIST_URL = "https://api.ifit.com/v1/activity_logs/" + "?platform=android&after=&softwareNumber=424992&perPage=5"
 
 IFIT_HIST = requests.get(IFIT_HIST_URL, headers=IFIT_HIST_HEADERS)
