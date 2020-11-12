@@ -353,10 +353,11 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
 
     '''Remove excess GPS points that were not actually arrived at'''
     actual_run_distance = DISTANCE_WITH_TIMESTAMP[-1]["distance"]
+    ACTUAL_COORDINATES_WITH_DISTANCE = []
     for x in COORDINATES_WITH_DISTANCE:
-        if x["distance"] > actual_run_distance:
-            n = COORDINATES_WITH_DISTANCE.index(x)
-            COORDINATES_WITH_DISTANCE.pop(n)
+        if x["distance"] < actual_run_distance:
+            ACTUAL_COORDINATES_WITH_DISTANCE.append(x)
+    COORDINATES_WITH_DISTANCE = ACTUAL_COORDINATES_WITH_DISTANCE
     ''' Create a list of distances only to get index of correct entry'''
     DISTANCE_LIST = []
     for x in DISTANCE_WITH_TIMESTAMP:
