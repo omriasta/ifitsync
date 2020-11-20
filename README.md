@@ -49,6 +49,5 @@ Currently supports uploading the following:
 - Treadmill Incline Degrees (as a custom datatype)
 - Location/Elevation GPS data is now uploaded for iFit workouts that are based on a Google Maps Route.
 
-The summarized values are due to Google Fit API not accepting some of the values provided by iFit because they are "Out of Range".
-
-I have limited the iFit API requests to just the last 5 items to improve performance. If you need to bulk upload the history to date, simply change the IFIT_HIST_URL as per the comment in get_ifitaccount.py (line 81)
+Some notes and suggestions regarding the script can be found on the Wiki:
+https://github.com/omriasta/ifitsync/wiki
