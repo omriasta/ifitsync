@@ -4,8 +4,19 @@ import getpass
 import json
 import os.path
 import time
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 from const import CLIENT_ID, CLIENT_SECRET
 
+retry_strategy = Retry(
+    total=3,
+    status_forcelist=[429, 500, 502, 503, 504],
+    method_whitelist=["HEAD", "GET", "OPTIONS"]
+)
+adapter = HTTPAdapter(max_retries=retry_strategy)
+http = requests.Session()
+http.mount("https://", adapter)
+http.mount("http://", adapter)
 
 if os.path.exists("ifit-credentials.json"):
     with open("ifit-credentials.json") as ifit_credentials_json:
@@ -75,14 +86,14 @@ IFIT_HIST_HEADERS = {"content-type": "application/json", "Accept": "*/*"}
 
 IFIT_HIST_HEADERS["authorization"] = "Bearer " + ACCESS_TOKEN
 
-IFIT_USER_INFO = requests.get("https://api.ifit.com/v1/me", headers=IFIT_HIST_HEADERS)
+IFIT_USER_INFO = http.get("https://api.ifit.com/v1/me", headers=IFIT_HIST_HEADERS)
 IFIT_USER_DICT = IFIT_USER_INFO.json()
 IFIT_USER_ID = IFIT_USER_DICT["id"]
 '''Uncomment the first URL and comment out the second if you need to bulk upload all history'''
 #IFIT_HIST_URL = "https://api.ifit.com/v1/activity_logs"
 IFIT_HIST_URL = "https://api.ifit.com/v1/activity_logs/" + "?platform=android&after=&softwareNumber=424992&perPage=5"
 
-IFIT_HIST = requests.get(IFIT_HIST_URL, headers=IFIT_HIST_HEADERS)
+IFIT_HIST = http.get(IFIT_HIST_URL, headers=IFIT_HIST_HEADERS)
 HISTORY_JSON = IFIT_HIST.json()
 
 IFIT_FEED_URL = (
@@ -91,6 +102,6 @@ IFIT_FEED_URL = (
     + "?platform=android&after=&softwareNumber=424992&perPage=5"
 )
 
-IFIT_FEED = requests.get(IFIT_FEED_URL, headers=IFIT_HIST_HEADERS)
+IFIT_FEED = http.get(IFIT_FEED_URL, headers=IFIT_HIST_HEADERS)
 FEED_JSON = IFIT_FEED.json()
 

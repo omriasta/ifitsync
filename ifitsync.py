@@ -6,7 +6,17 @@ import json
 import time
 import requests
 import math
-
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
+retry_strategy = Retry(
+    total=3,
+    status_forcelist=[429, 500, 502, 503, 504],
+    method_whitelist=["HEAD", "GET", "OPTIONS"]
+)
+adapter = HTTPAdapter(max_retries=retry_strategy)
+http = requests.Session()
+http.mount("https://", adapter)
+http.mount("http://", adapter)
 
 service = main()
 
@@ -321,7 +331,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
     '''Function that uploads distance data from iFit workout to Google Fit'''
     '''Create a List with Coordinates and Distances correlating'''
     WORKOUT_DETAILS_URL = "https://api.ifit.com/v1/workouts/" + IfitWorkoutJson["workout_id"]
-    WORKOUT_DETAILS = requests.get(WORKOUT_DETAILS_URL, headers=IFIT_HIST_HEADERS).json()
+    WORKOUT_DETAILS = http.get(WORKOUT_DETAILS_URL, headers=IFIT_HIST_HEADERS).json()
     COORDINATES_WITH_DISTANCE = []
     sum = 0
     for coordinate, next_coordinate in zip(WORKOUT_DETAILS["geo"]["path"]["coordinates"], WORKOUT_DETAILS["geo"]["path"]["coordinates"][1:]):
