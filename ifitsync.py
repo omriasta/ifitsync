@@ -20,6 +20,24 @@ http.mount("http://", adapter)
 
 service = main()
 
+'''define classes'''
+
+class HISTORY:
+    def __init__(self, JSON):
+        self.id = JSON["id"]
+        self.workout_id = JSON["workout_id"]
+        self.duration = JSON["duration"]
+        self.start_time = JSON["start"]
+        self.end_time = JSON["end"]
+        self.total_steps = JSON["summary"]["total_steps"]
+        self.total_meters = JSON["summary"]["total_meters"]
+        self.total_calories = JSON["summary"]["total_calories"]
+        self.workout_json_url = "https://gateway.ifit.com/wolf-workouts-service/v1/post-workout/" + self.id + "?softwareNumber=424992&isMetric=false&locale=en-US&deviceType=tablet HTTP/1.1"
+        self.workout_details_json = http.get(self.workout_json_url, headers=IFIT_HIST_HEADERS).json()
+        self.title = self.workout_details_json["title"]
+        self.stats_url = "https://api.ifit.com/v1/activity_logs/" + self.id
+        self.stats = http.get(self.stats_url, headers=IFIT_HIST_HEADERS).json()
+
 def closest(lst, K): 
       
     return lst[min(range(len(lst)), key = lambda i: abs(lst[i]-K))] 
@@ -40,11 +58,9 @@ def haversine(coord1, coord2):
 
 '''Assign Workout Name and ID from feed to History'''
 for x in HISTORY_JSON:
-    workout_id = x["id"]
-    workout_name = next(item for item in FEED_JSON if item["id"] == workout_id)["title"]
-    workout_date = next(item for item in FEED_JSON if item["id"] == workout_id)["date"]
-    x["name"] = workout_name
-    x["date"] = workout_date
+    y = HISTORY(x)  
+    x["name"] = y.title
+
 
 
 def CheckGoogleDataSourceExists(dataSourceId):
@@ -660,18 +676,19 @@ with open('last_run_time.json') as timestamp_file:
     timestampdict = json.load(timestamp_file)
 last_run_time = timestampdict["last_run_time"]
 for last_workout in HISTORY_JSON:
-    if last_workout["start"] > last_run_time:
-        UploadIfitCaloriesToGoogle(last_workout)
-        UploadIfitDistanceToGoogle(last_workout)
-        UploadIfitHrToGoogle(last_workout)
-        UploadIfitSpeedToGoogle(last_workout)
-        UploadIfitStepsToGoogle(last_workout)
-        UploadIfitWattsToGoogle(last_workout)
+    y = HISTORY(last_workout)
+    if y.start_time > last_run_time:
+        UploadIfitCaloriesToGoogle(y.stats)
+        UploadIfitDistanceToGoogle(y.stats)
+        UploadIfitHrToGoogle(y.stats)
+        UploadIfitSpeedToGoogle(y.stats)
+        UploadIfitStepsToGoogle(y.stats)
+        UploadIfitWattsToGoogle(y.stats)
         UploadIfitSessionToGoogle(last_workout)
-        UploadIfitActivityToGoogle(last_workout)
-        UploadIfitInclineToGoogle(last_workout)
-        UploadIfitElevationToGoogle(last_workout)
-        UploadIfitGPSToGoogle(last_workout)
+        UploadIfitActivityToGoogle(y.stats)
+        UploadIfitInclineToGoogle(y.stats)
+        UploadIfitElevationToGoogle(y.stats)
+        UploadIfitGPSToGoogle(y.stats)
     else:
         print(last_workout["name"] + " already uploaded")
 
@@ -682,3 +699,4 @@ timestampjson = {}
 timestampjson["last_run_time"] = secondssinceepoch
 with open('last_run_time.json', 'w') as timestamp_file:
     json.dump(timestampjson, timestamp_file)
+
