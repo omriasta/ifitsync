@@ -37,6 +37,10 @@ class HISTORY:
         self.title = self.workout_details_json["title"]
         self.stats_url = "https://api.ifit.com/v1/activity_logs/" + self.id
         self.stats = http.get(self.stats_url, headers=IFIT_HIST_HEADERS).json()
+        self.start = self.stats["start"] * 1000000
+        self.end = self.stats["end"] * 1000000
+        self.lists = self.stats["stats"]
+
 
 def closest(lst, K): 
       
@@ -55,11 +59,6 @@ def haversine(coord1, coord2):
         math.cos(phi1)*math.cos(phi2)*math.sin(dlambda/2)**2
     
     return 2*R*math.atan2(math.sqrt(a), math.sqrt(1 - a))
-
-'''Assign Workout Name and ID from feed to History'''
-for x in HISTORY_JSON:
-    y = HISTORY(x)  
-    x["name"] = y.title
 
 
 
@@ -95,28 +94,28 @@ def UploadIfitHrToGoogle(IfitWorkoutJson):
     '''Function that Uploads HR data from an iFit Workout to Google'''
     google_datapoint = {}
     google_datapoint.update(
-        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
-        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000,
+        minStartTimeNs=IfitWorkoutJson.start,
+        maxEndTimeNs=IfitWorkoutJson.end,
         dataSourceId=GOOGLE_DATA_SOURCES[0]["datasourceid"],
         point=[],
     )
 
     google_datapoint["point"].append(
         {
-            "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
-            "endTimeNanos": IfitWorkoutJson["start"] * 1000000
-            + IfitWorkoutJson["stats"]["bpm"][0]["offset"] * 1000000,
+            "startTimeNanos": IfitWorkoutJson.start,
+            "endTimeNanos": IfitWorkoutJson.start
+            + IfitWorkoutJson.lists["bpm"][0]["offset"] * 1000000,
             "dataTypeName": "com.google.heart_rate.bpm",
-            "value": [{"fpVal": IfitWorkoutJson["stats"]["bpm"][0]["value"]}],
+            "value": [{"fpVal": IfitWorkoutJson.lists["bpm"][0]["value"]}],
         }
     )
-    for x in IfitWorkoutJson["stats"]["bpm"][1:]:
+    for x in IfitWorkoutJson.lists["bpm"][1:]:
         google_datapoint["point"].append(
             {
                 "startTimeNanos": google_datapoint["point"][
                     len(google_datapoint["point"]) - 1
                 ]["endTimeNanos"],
-                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                "endTimeNanos": IfitWorkoutJson.start
                 + x["offset"] * 1000000,
                 "dataTypeName": "com.google.heart_rate.bpm",
                 "value": [{"fpVal": x["value"]}],
@@ -144,28 +143,28 @@ def UploadIfitSpeedToGoogle(IfitWorkoutJson):
     '''Function that Uploads Speed Data from an iFit Workout to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
-        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
-        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000,
+        minStartTimeNs=IfitWorkoutJson.start,
+        maxEndTimeNs=IfitWorkoutJson.end,
         dataSourceId=GOOGLE_DATA_SOURCES[1]["datasourceid"],
         point=[],
     )
 
     google_datapoint["point"].append(
         {
-            "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
-            "endTimeNanos": IfitWorkoutJson["start"] * 1000000
-            + IfitWorkoutJson["stats"]["mps"][0]["offset"] * 1000000,
+            "startTimeNanos": IfitWorkoutJson.start,
+            "endTimeNanos": IfitWorkoutJson.start
+            + IfitWorkoutJson.lists["mps"][0]["offset"] * 1000000,
             "dataTypeName": "com.google.speed",
-            "value": [{"fpVal": IfitWorkoutJson["stats"]["mps"][0]["value"]}],
+            "value": [{"fpVal": IfitWorkoutJson.lists["mps"][0]["value"]}],
         }
     )
-    for x in IfitWorkoutJson["stats"]["mps"][1:]:
+    for x in IfitWorkoutJson.lists["mps"][1:]:
         google_datapoint["point"].append(
             {
                 "startTimeNanos": google_datapoint["point"][
                     len(google_datapoint["point"]) - 1
                 ]["endTimeNanos"],
-                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                "endTimeNanos": IfitWorkoutJson.start
                 + x["offset"] * 1000000,
                 "dataTypeName": "com.google.speed",
                 "value": [{"fpVal": x["value"]}],
@@ -194,28 +193,28 @@ def UploadIfitWattsToGoogle(IfitWorkoutJson):
     '''Function that Uploads Power data from an iFit workout to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
-        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
-        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000,
+        minStartTimeNs=IfitWorkoutJson.start,
+        maxEndTimeNs=IfitWorkoutJson.end,
         dataSourceId=GOOGLE_DATA_SOURCES[2]["datasourceid"],
         point=[],
     )
 
     google_datapoint["point"].append(
         {
-            "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
-            "endTimeNanos": IfitWorkoutJson["start"] * 1000000
-            + IfitWorkoutJson["stats"]["watts"][0]["offset"] * 1000000,
+            "startTimeNanos": IfitWorkoutJson.start,
+            "endTimeNanos": IfitWorkoutJson.start
+            + IfitWorkoutJson.lists["watts"][0]["offset"] * 1000000,
             "dataTypeName": "com.google.power.sample",
-            "value": [{"fpVal": IfitWorkoutJson["stats"]["watts"][0]["value"]}],
+            "value": [{"fpVal": IfitWorkoutJson.lists["watts"][0]["value"]}],
         }
     )
-    for x in IfitWorkoutJson["stats"]["watts"][1:]:
+    for x in IfitWorkoutJson.lists["watts"][1:]:
         google_datapoint["point"].append(
             {
                 "startTimeNanos": google_datapoint["point"][
                     len(google_datapoint["point"]) - 1
                 ]["endTimeNanos"],
-                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                "endTimeNanos": IfitWorkoutJson.start
                 + x["offset"] * 1000000,
                 "dataTypeName": "com.google.power.sample",
                 "value": [{"fpVal": x["value"]}],
@@ -244,18 +243,18 @@ def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
     '''Function that Uploads Calorie data from an iFit workout to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
-        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
-        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000,
+        minStartTimeNs=IfitWorkoutJson.start,
+        maxEndTimeNs=IfitWorkoutJson.end,
         dataSourceId=GOOGLE_DATA_SOURCES[3]["datasourceid"],
         point=[],
     )
 
     google_datapoint["point"].append(
         {
-            "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
-            "endTimeNanos": IfitWorkoutJson["end"] * 1000000,
+            "startTimeNanos": IfitWorkoutJson.start,
+            "endTimeNanos": IfitWorkoutJson.end,
             "dataTypeName": "com.google.calories.expended",
-            "value": [{"fpVal": IfitWorkoutJson["summary"]["total_calories"]}],
+            "value": [{"fpVal": IfitWorkoutJson.stats["summary"]["total_calories"]}],
         }
     )
     '''The below section commented out as Google Fit throws data out of range for some of the points, instead uploading totals for the workout'''
@@ -297,30 +296,30 @@ def UploadIfitDistanceToGoogle(IfitWorkoutJson):
     '''Function that uploads distance data from iFit workout to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
-        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
-        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000,
+        minStartTimeNs=IfitWorkoutJson.start,
+        maxEndTimeNs=IfitWorkoutJson.end,
         dataSourceId=GOOGLE_DATA_SOURCES[4]["datasourceid"],
         point=[],
     )
 
     google_datapoint["point"].append(
         {
-            "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
-            "endTimeNanos": IfitWorkoutJson["start"] * 1000000
-            + IfitWorkoutJson["stats"]["meters"][0]["offset"] * 1000000,
+            "startTimeNanos": IfitWorkoutJson.start,
+            "endTimeNanos": IfitWorkoutJson.start
+            + IfitWorkoutJson.lists["meters"][0]["offset"] * 1000000,
             "dataTypeName": "com.google.distance.delta",
-            "value": [{"fpVal": IfitWorkoutJson["stats"]["meters"][0]["value"]}],
+            "value": [{"fpVal": IfitWorkoutJson.lists["meters"][0]["value"]}],
         }
     )
     for index, x in zip(
-        IfitWorkoutJson["stats"]["meters"], IfitWorkoutJson["stats"]["meters"][1:]
+        IfitWorkoutJson.lists["meters"], IfitWorkoutJson.lists["meters"][1:]
     ):
         google_datapoint["point"].append(
             {
                 "startTimeNanos": google_datapoint["point"][
                     len(google_datapoint["point"]) - 1
                 ]["endTimeNanos"],
-                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                "endTimeNanos": IfitWorkoutJson.start
                 + x["offset"] * 1000000,
                 "dataTypeName": "com.google.distance.delta",
                 "value": [{"fpVal": x["value"] - index["value"]}],
@@ -346,7 +345,7 @@ def UploadIfitDistanceToGoogle(IfitWorkoutJson):
 def UploadIfitGPSToGoogle(IfitWorkoutJson):
     '''Function that uploads distance data from iFit workout to Google Fit'''
     '''Create a List with Coordinates and Distances correlating'''
-    WORKOUT_DETAILS_URL = "https://api.ifit.com/v1/workouts/" + IfitWorkoutJson["workout_id"]
+    WORKOUT_DETAILS_URL = "https://api.ifit.com/v1/workouts/" + IfitWorkoutJson.stats["workout_id"]
     WORKOUT_DETAILS = http.get(WORKOUT_DETAILS_URL, headers=IFIT_HIST_HEADERS).json()
     COORDINATES_WITH_DISTANCE = []
     sum = 0
@@ -363,17 +362,17 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
     '''Create a list with distances and timestamps'''
 
     DISTANCE_WITH_TIMESTAMP = []
-    for x in IfitWorkoutJson["stats"]["meters"]:
+    for x in IfitWorkoutJson.lists["meters"]:
         timestamp_distance = {}
-        timestamp_distance["timestamp"] = IfitWorkoutJson["start"] * 1000000 + x["offset"]
+        timestamp_distance["timestamp"] = IfitWorkoutJson.start + x["offset"]
         timestamp_distance["distance"] = x["value"]
         DISTANCE_WITH_TIMESTAMP.append(timestamp_distance)
     '''Create a list with elevations and timestamps'''
 
     ELEVATION_WITH_TIMESTAMP = []
-    for x in IfitWorkoutJson["stats"]["elevation"]:
+    for x in IfitWorkoutJson.lists["elevation"]:
         timestamp_elevation = {}
-        timestamp_elevation["timestamp"] = IfitWorkoutJson["start"] * 1000000 + x["offset"] * 1000000
+        timestamp_elevation["timestamp"] = IfitWorkoutJson.start + x["offset"] * 1000000
         timestamp_elevation["elevation"] = x["value"]
         ELEVATION_WITH_TIMESTAMP.append(timestamp_elevation)    
 
@@ -415,22 +414,22 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
     else:
         google_datapoint = {}
         google_datapoint.update(
-            minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
-            maxEndTimeNs=IfitWorkoutJson["end"] * 1000000,
+            minStartTimeNs=IfitWorkoutJson.start,
+            maxEndTimeNs=IfitWorkoutJson.end,
             dataSourceId=GOOGLE_DATA_SOURCES[7]["datasourceid"],
             point=[],
         )
 
         google_datapoint["point"].append(
             {
-                "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
-                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
-                + IfitWorkoutJson["stats"]["meters"][0]["offset"] * 1000000,
+                "startTimeNanos": IfitWorkoutJson.start,
+                "endTimeNanos": IfitWorkoutJson.start
+                + IfitWorkoutJson.lists["meters"][0]["offset"] * 1000000,
                 "dataTypeName": "com.google.location.sample",
                 "value": [{"fpVal": WORKOUT_DETAILS["geo"]["path"]["coordinates"][0][1]},{"fpVal": WORKOUT_DETAILS["geo"]["path"]["coordinates"][0][0]}, {"fpVal": 5}, {"fpVal": 0}],
             }
         )
-        if len(IfitWorkoutJson["stats"]["elevation"]) != 0:
+        if len(IfitWorkoutJson.lists["elevation"]) != 0:
             for x in COORDINATES_WITH_TIMESTAMPS:
                 google_datapoint["point"].append(
                     {
@@ -442,8 +441,8 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
                 )
             google_datapoint["point"].append(
                 {
-                    "startTimeNanos": IfitWorkoutJson["end"] * 1000000 - 1,
-                    "endTimeNanos": IfitWorkoutJson["end"] * 1000000,
+                    "startTimeNanos": IfitWorkoutJson.end - 1,
+                    "endTimeNanos": IfitWorkoutJson.end,
                     "dataTypeName": "com.google.location.sample",
                     "value": [{"fpVal": COORDINATES_WITH_TIMESTAMPS[-1]["latitude"]},{"fpVal": COORDINATES_WITH_TIMESTAMPS[-1]["longitude"]}, {"fpVal": 5}, {"fpVal": COORDINATES_WITH_TIMESTAMPS[-1]["elevation"]}],
                 }
@@ -460,8 +459,8 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
                 )
             google_datapoint["point"].append(
                 {
-                    "startTimeNanos": IfitWorkoutJson["end"] * 1000000 - 1,
-                    "endTimeNanos": IfitWorkoutJson["end"] * 1000000,
+                    "startTimeNanos": IfitWorkoutJson.end - 1,
+                    "endTimeNanos": IfitWorkoutJson.end,
                     "dataTypeName": "com.google.location.sample",
                     "value": [{"fpVal": COORDINATES_WITH_TIMESTAMPS[-1]["latitude"]},{"fpVal": COORDINATES_WITH_TIMESTAMPS[-1]["longitude"]}, {"fpVal": 5}, {"fpVal": 0}],
                 }
@@ -489,18 +488,18 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
     '''Function that uploads Step data from iFit workout to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
-        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
-        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000,
+        minStartTimeNs=IfitWorkoutJson.start,
+        maxEndTimeNs=IfitWorkoutJson.end,
         dataSourceId=GOOGLE_DATA_SOURCES[5]["datasourceid"],
         point=[],
     )
 
     google_datapoint["point"].append(
         {
-            "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
-            "endTimeNanos": IfitWorkoutJson["end"] * 1000000,
+            "startTimeNanos": IfitWorkoutJson.start,
+            "endTimeNanos": IfitWorkoutJson.end,
             "dataTypeName": "com.google.step_count.delta",
-            "value": [{"intVal": IfitWorkoutJson["summary"]["total_steps"]}],
+            "value": [{"intVal": IfitWorkoutJson.stats["summary"]["total_steps"]}],
         }
     )
     """
@@ -541,16 +540,16 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
     '''Function that creates a workout on Google Fit and gives it a name and the activity type'''
     session_body = {}
     session_body.update(
-        id=IfitWorkoutJson["id"],
-        name=IfitWorkoutJson["name"],
-        startTimeMillis=IfitWorkoutJson["start"],
-        endTimeMillis=IfitWorkoutJson["end"],
+        id=IfitWorkoutJson.id,
+        name=IfitWorkoutJson.title,
+        startTimeMillis=IfitWorkoutJson.stats["start"],
+        endTimeMillis=IfitWorkoutJson.stats["end"],
         application={"name": "iFit-Sync"},
         activityType=8,
     )
 
     try:
-        service.users().sessions().update(userId="me", sessionId=IfitWorkoutJson["id"], body=session_body,).execute()
+        service.users().sessions().update(userId="me", sessionId=IfitWorkoutJson.id, body=session_body,).execute()
     except HttpError as error:
         raise error
     print("Uploaded Workout Session data successfully")
@@ -559,16 +558,16 @@ def UploadIfitActivityToGoogle(IfitWorkoutJson):
     '''This function populates the Active Time for the Google Fit Workout created'''
     google_datapoint = {}
     google_datapoint.update(
-        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
-        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000,
+        minStartTimeNs=IfitWorkoutJson.start,
+        maxEndTimeNs=IfitWorkoutJson.end,
         dataSourceId=GOOGLE_DATA_SOURCES[6]["datasourceid"],
         point=[],
     )
 
     google_datapoint["point"].append(
         {
-            "startTimeNanos": IfitWorkoutJson["start"] * 1000000,
-            "endTimeNanos": IfitWorkoutJson["end"] * 1000000,            
+            "startTimeNanos": IfitWorkoutJson.start,
+            "endTimeNanos": IfitWorkoutJson.end,            
             "dataTypeName": "com.google.activity.segment",
             "value": [{"intVal": 8}],
         }
@@ -594,18 +593,18 @@ def UploadIfitInclineToGoogle(IfitWorkoutJson):
     '''Function to Upload Incline data from iFit to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
-        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
-        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000 + 1,
+        minStartTimeNs=IfitWorkoutJson.start,
+        maxEndTimeNs=IfitWorkoutJson.end + 1,
         dataSourceId=GOOGLE_DATA_SOURCES[8]["datasourceid"],
         point=[],
     )
 
 
-    for x in IfitWorkoutJson["stats"]["incline"][1:]:
+    for x in IfitWorkoutJson.lists["incline"][1:]:
         google_datapoint["point"].append(
             {
-                "startTimeNanos": IfitWorkoutJson["start"] * 1000000 + x["offset"] * 1000000,
-                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                "startTimeNanos": IfitWorkoutJson.start + x["offset"] * 1000000,
+                "endTimeNanos": IfitWorkoutJson.start
                 + x["offset"] * 1000000 + 1,
                 "dataTypeName": "com.ifitsync.treadmillincline.degrees",
                 "value": [{"fpVal": x["value"]}],
@@ -632,18 +631,18 @@ def UploadIfitElevationToGoogle(IfitWorkoutJson):
     '''Function to Upload Elevation data from iFit to Google Fit'''
     google_datapoint = {}
     google_datapoint.update(
-        minStartTimeNs=IfitWorkoutJson["start"] * 1000000,
-        maxEndTimeNs=IfitWorkoutJson["end"] * 1000000 + 1,
+        minStartTimeNs=IfitWorkoutJson.start,
+        maxEndTimeNs=IfitWorkoutJson.end + 1,
         dataSourceId=GOOGLE_DATA_SOURCES[9]["datasourceid"],
         point=[],
     )
 
 
-    for x in IfitWorkoutJson["stats"]["elevation"][1:]:
+    for x in IfitWorkoutJson.lists["elevation"][1:]:
         google_datapoint["point"].append(
             {
-                "startTimeNanos": IfitWorkoutJson["start"] * 1000000 + x["offset"] * 1000000,
-                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                "startTimeNanos": IfitWorkoutJson.start + x["offset"] * 1000000,
+                "endTimeNanos": IfitWorkoutJson.start
                 + x["offset"] * 1000000 + 1,
                 "dataTypeName": "com.ifitsync.treadmill.elevation",
                 "value": [{"fpVal": x["value"]}],
@@ -678,22 +677,23 @@ last_run_time = timestampdict["last_run_time"]
 for last_workout in HISTORY_JSON:
     y = HISTORY(last_workout)
     if y.start_time > last_run_time:
-        UploadIfitCaloriesToGoogle(y.stats)
-        UploadIfitDistanceToGoogle(y.stats)
-        UploadIfitHrToGoogle(y.stats)
-        UploadIfitSpeedToGoogle(y.stats)
-        UploadIfitStepsToGoogle(y.stats)
-        UploadIfitWattsToGoogle(y.stats)
-        UploadIfitSessionToGoogle(last_workout)
-        UploadIfitActivityToGoogle(y.stats)
-        UploadIfitInclineToGoogle(y.stats)
-        UploadIfitElevationToGoogle(y.stats)
-        UploadIfitGPSToGoogle(y.stats)
+        UploadIfitCaloriesToGoogle(y)
+        UploadIfitDistanceToGoogle(y)
+        UploadIfitHrToGoogle(y)
+        UploadIfitSpeedToGoogle(y)
+        UploadIfitStepsToGoogle(y)
+        UploadIfitWattsToGoogle(y)
+        UploadIfitSessionToGoogle(y)
+        UploadIfitActivityToGoogle(y)
+        UploadIfitInclineToGoogle(y)
+        UploadIfitElevationToGoogle(y)
+        UploadIfitGPSToGoogle(y)
     else:
-        print(last_workout["name"] + " already uploaded")
+        print(y.title + " already uploaded")
 
 
 '''This creates the timestamp that will show when the script ran last'''
+
 secondssinceepoch = round(time.time() * 1000)
 timestampjson = {}
 timestampjson["last_run_time"] = secondssinceepoch
