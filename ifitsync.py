@@ -8,6 +8,9 @@ import requests
 import math
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
+import os.path
+from os import path
+
 retry_strategy = Retry(
     total=3,
     status_forcelist=[429, 500, 502, 503, 504],
@@ -671,9 +674,12 @@ for x in GOOGLE_DATA_SOURCES:
         y = x.pop("datasourceid")
         CreateGoogleDataSource(x)
 '''Function to check when the last time the script was run and upload just the workouts that have been added since'''
-with open('last_run_time.json') as timestamp_file:
-    timestampdict = json.load(timestamp_file)
-last_run_time = timestampdict["last_run_time"]
+if path.exists('last_run_time.json'):
+    with open('last_run_time.json') as timestamp_file:
+        timestampdict = json.load(timestamp_file)
+    last_run_time = timestampdict["last_run_time"]
+else:
+    last_run_time = 0
 for last_workout in HISTORY_JSON:
     y = HISTORY(last_workout)
     if y.start_time > last_run_time:
