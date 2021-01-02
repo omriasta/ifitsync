@@ -1,6 +1,5 @@
 # ifitsync
-## On 11/21/2020 iFit changed the data structure and URL's for their API. The endpoints were modified. The script has been adapted as on 11/24/2020
-This Python script grabs workout data from your ifit account and uploads it to Google Fit. It is a very rough start and there is no error checking or debugging.
+## iFit now has an android tv app. If anyone would like to try and get the client id and traffic for this app, we may be able to get an easier authentication flow for the script.
 
 Currently iFit does not have any documentation on the API and there is no way to integrate an app using their website. For now, you will have to figure out how to get Client ID and Secret on your own. It is not too hard. I have an iFit treadmill so that is the only thing this is written for but if you look at the code you should be able to tweak it to work with other equipment or even other services beyond google fit.
 The project files are separated so you can use just "get_ifitaccount.py" to get the JSON responses from the API and then write some other code to upload to other services.
