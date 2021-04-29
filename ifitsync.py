@@ -376,7 +376,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
     ELEVATION_WITH_TIMESTAMP = []
     for x in IfitWorkoutJson.lists["elevation"]:
         timestamp_elevation = {}
-        timestamp_elevation["timestamp"] = IfitWorkoutJson.start + x["offset"] * 1000000
+        timestamp_elevation["timestamp"] = IfitWorkoutJson.start + x["offset"]
         timestamp_elevation["elevation"] = x["value"]
         ELEVATION_WITH_TIMESTAMP.append(timestamp_elevation)    
 
