@@ -43,6 +43,7 @@ class HISTORY:
         self.start = self.stats["start"] * 1000000
         self.end = self.stats["end"] * 1000000
         self.lists = self.stats["stats"]
+        self.type = JSON["type"]
 
 
 def closest(lst, K): 
@@ -542,6 +543,8 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
 
 def UploadIfitSessionToGoogle(IfitWorkoutJson):
     '''Function that creates a workout on Google Fit and gives it a name and the activity type'''
+    if IfitWorkoutJson.type == "run":
+        fit_activity_type = 8
     session_body = {}
     session_body.update(
         id=IfitWorkoutJson.id,
@@ -549,7 +552,7 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
         startTimeMillis=IfitWorkoutJson.stats["start"],
         endTimeMillis=IfitWorkoutJson.stats["end"],
         application={"name": "iFit-Sync"},
-        activityType=8,
+        activityType=fit_activity_type,
     )
 
     try:
@@ -560,6 +563,8 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
 
 def UploadIfitActivityToGoogle(IfitWorkoutJson):
     '''This function populates the Active Time for the Google Fit Workout created'''
+    if IfitWorkoutJson.type == "run":
+        fit_activity_type = 8
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson.start,
@@ -573,7 +578,7 @@ def UploadIfitActivityToGoogle(IfitWorkoutJson):
             "startTimeNanos": IfitWorkoutJson.start,
             "endTimeNanos": IfitWorkoutJson.end,            
             "dataTypeName": "com.google.activity.segment",
-            "value": [{"intVal": 8}],
+            "value": [{"intVal": fit_activity_type}],
         }
     )
     

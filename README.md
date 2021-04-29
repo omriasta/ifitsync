@@ -1,12 +1,12 @@
 # ifitsync
 ## Easiest way to get the client id is to go to https://www.ifit.com/settings/apps and sign in. Then view the page source. The clientid and clientsecret are displayed there in plain text, just search for "clientid", you can use either of the ones available.
 
-Currently iFit does not have any documentation on the API and there is no way to integrate an app using their website. For now, you will have to figure out how to get Client ID and Secret on your own. It is not too hard. I have an iFit treadmill so that is the only thing this is written for but if you look at the code you should be able to tweak it to work with other equipment or even other services beyond google fit.
+Currently iFit does not have any documentation on the API and there is no way to integrate an app using their website. You will have to get Client ID and Secret from the iFit website. I have an iFit treadmill so that is the only thing this is written for but if you look at the code you should be able to tweak it to work with other equipment or even other services beyond google fit.
 The project files are separated so you can use just "get_ifitaccount.py" to get the JSON responses from the API and then write some other code to upload to other services.
 
 INSTRUCTIONS:
 
-Get client id and secret for ifit api, I can't give this out but if you do some digging it's possible to get this from the android application
+Get client id and secret for ifit api from the iFit website as mentioned above.
 
 Place these in the const.py.template file in the respective places and then rename the file const.py
 
@@ -47,7 +47,7 @@ Currently supports uploading the following:
 - Workout name taken from iFit
 - Elevation Data in Meters (as a custom datatype)
 - Treadmill Incline Degrees (as a custom datatype)
-- Location/Elevation GPS data is now uploaded for iFit workouts that are based on a Google Maps Route.
+- Location/Elevation GPS data is now uploaded for iFit workouts that are based on a Google Maps Route but don't appear to be showing along the route, just start and finish elevations.
 
 Some notes and suggestions regarding the script can be found on the Wiki:
 https://github.com/omriasta/ifitsync/wiki
