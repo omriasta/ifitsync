@@ -368,7 +368,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
     DISTANCE_WITH_TIMESTAMP = []
     for x in IfitWorkoutJson.lists["meters"]:
         timestamp_distance = {}
-        timestamp_distance["timestamp"] = IfitWorkoutJson.start + x["offset"]
+        timestamp_distance["timestamp"] = IfitWorkoutJson.start + x["offset"] * 1000000
         timestamp_distance["distance"] = x["value"]
         DISTANCE_WITH_TIMESTAMP.append(timestamp_distance)
     '''Create a list with elevations and timestamps'''
@@ -376,7 +376,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
     ELEVATION_WITH_TIMESTAMP = []
     for x in IfitWorkoutJson.lists["elevation"]:
         timestamp_elevation = {}
-        timestamp_elevation["timestamp"] = IfitWorkoutJson.start + x["offset"]
+        timestamp_elevation["timestamp"] = IfitWorkoutJson.start + x["offset"] * 1000000
         timestamp_elevation["elevation"] = x["value"]
         ELEVATION_WITH_TIMESTAMP.append(timestamp_elevation)    
 
@@ -409,10 +409,9 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
     ''' APPEND ELEVATIONS TO COORDINATES WITH TIMESTAMPS'''
     if len(ELEVATION_LIST) != 0:
         for x in COORDINATES_WITH_TIMESTAMPS:
-            closest_value = closest(ELEVATION_LIST, x["timestamp"])
+            closest_value = closest(ELEVATION_LIST, x["timestamp"])        
             index_closest_value = ELEVATION_LIST.index(closest_value)
             x["elevation"] = ELEVATION_WITH_TIMESTAMP[index_closest_value]["elevation"]
-
 
     if not WORKOUT_DETAILS["has_geo_data"]:
         print("No Geo Data for workout")
