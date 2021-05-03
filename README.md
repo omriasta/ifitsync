@@ -47,7 +47,7 @@ Currently supports uploading the following:
 - Workout name taken from iFit
 - Elevation Data in Meters (as a custom datatype)
 - Treadmill Incline Degrees (as a custom datatype)
-- Location/Elevation GPS data is now uploaded for iFit workouts that are based on a Google Maps Route but don't appear to be showing along the route, just start and finish elevations.
+- Location/Elevation GPS data is now uploaded for iFit workouts that are based on a Google Maps Route
 
 Some notes and suggestions regarding the script can be found on the Wiki:
 https://github.com/omriasta/ifitsync/wiki
