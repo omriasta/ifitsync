@@ -19,6 +19,8 @@ SCOPES = [
     "https://www.googleapis.com/auth/fitness.location.read",
     "https://www.googleapis.com/auth/fitness.body.write",
     "https://www.googleapis.com/auth/fitness.location.write",
+    "https://www.googleapis.com/auth/fitness.heart_rate.read",
+    "https://www.googleapis.com/auth/fitness.heart_rate.write",
 ]
 
 
