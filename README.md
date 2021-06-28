@@ -1,14 +1,10 @@
 # ifitsync
-## Easiest way to get the client id is to go to https://www.ifit.com/settings/apps and sign in. Then view the page source. The clientid and clientsecret are displayed there in plain text, just search for "clientid", you can use either of the ones available.
+## ClientId and Secret are now gathered by the script using web scraping If you already used the script previously you will have to reinstall requirements.txt and delete ifit-credentials.json.
 
 Currently iFit does not have any documentation on the API and there is no way to integrate an app using their website. You will have to get Client ID and Secret from the iFit website. I have an iFit treadmill so that is the only thing this is written for but if you look at the code you should be able to tweak it to work with other equipment or even other services beyond google fit.
 The project files are separated so you can use just "get_ifitaccount.py" to get the JSON responses from the API and then write some other code to upload to other services.
 
 INSTRUCTIONS:
-
-Get client id and secret for ifit api from the iFit website as mentioned above.
-
-Place these in the const.py.template file in the respective places and then rename the file const.py
 
 Go to https://console.developers.google.com
 
