@@ -1,4 +1,0 @@
-"""Constants that store client_id and client_secret"""
-
-CLIENT_ID = "XXXXXXXXXXXX"
-CLIENT_SECRET = "XXXXXXXXXXXXX"
