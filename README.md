@@ -1,7 +1,7 @@
 # ifitsync
 ## ClientId and Secret are now gathered by the script using web scraping If you already used the script previously you will have to reinstall requirements.txt and delete ifit-credentials.json.
 
-Currently iFit does not have any documentation on the API and there is no way to integrate an app using their website. You will have to get Client ID and Secret from the iFit website. I have an iFit treadmill so that is the only thing this is written for but if you look at the code you should be able to tweak it to work with other equipment or even other services beyond google fit.
+Currently iFit does not have any documentation on the API and there is no way to integrate an app using their website. I have an iFit treadmill so that is the only thing this is written for but if you look at the code you should be able to tweak it to work with other equipment or even other services beyond google fit.
 The project files are separated so you can use just "get_ifitaccount.py" to get the JSON responses from the API and then write some other code to upload to other services.
 
 INSTRUCTIONS:
@@ -25,7 +25,7 @@ Run the script: python ifitsync.py
 
 Enter ifit user and pass when prompted
 
-A browser should open and prompt you to sign in to google and grant access to a some Google Fit related options, allow them all
+A browser should open and prompt you to sign in to google and grant access to some Google Fit related options, allow them all
 
 Close the browser when prompted and wait for the script to continue
 
