@@ -47,3 +47,6 @@ Currently supports uploading the following:
 
 Some notes and suggestions regarding the script can be found on the Wiki:
 https://github.com/omriasta/ifitsync/wiki
+Below are screenshots of a workout from iFit and how it appears in Google Fit:
+![Screenshot_20210628-162803](https://user-images.githubusercontent.com/11823048/123702717-79990280-d831-11eb-9e99-053850f50ae6.png)
+![Screenshot from 2021-06-28 16-50-31](https://user-images.githubusercontent.com/11823048/123702727-7bfb5c80-d831-11eb-8f5d-091b942faa85.png)
