@@ -4,6 +4,8 @@
 Currently iFit does not have any documentation on the API and there is no way to integrate an app using their website. I have an iFit treadmill so that is the only thing this is written for but if you look at the code you should be able to tweak it to work with other equipment or even other services beyond google fit.
 The project files are separated so you can use just "get_ifitaccount.py" to get the JSON responses from the API and then write some other code to upload to other services.
 
+Windows users can use the exe file under dist, you will need to create the credentials.json file (listed below) and save it to the same directory as the exe. No need to worry about the virtual environment.
+
 INSTRUCTIONS:
 
 Go to https://console.developers.google.com
