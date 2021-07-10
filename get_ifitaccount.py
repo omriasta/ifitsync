@@ -51,8 +51,8 @@ if os.path.exists("ifit-credentials.json"):
         RESPONSE = requests.post(TOKEN_URL, headers=TOKEN_HEADERS, json=PAYLOAD)
         RESPONSE_JSON = RESPONSE.json()
         RESPONSE_JSON["timestamp"] = time.time()
-        RESPONSE_JSON["clientid"] = CLIENT_ID
-        RESPONSE_JSON["clientsecret"] = CLIENT_SECRET
+        RESPONSE_JSON["clientid"] = ifit_credentials["clientid"]
+        RESPONSE_JSON["clientsecret"] = ifit_credentials["clientsecret"]
         with open("ifit-credentials.json", "w") as outfile:
             json.dump(RESPONSE_JSON, outfile)
         ACCESS_TOKEN = RESPONSE_JSON["access_token"]
