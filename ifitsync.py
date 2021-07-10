@@ -256,28 +256,28 @@ def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
     google_datapoint["point"].append(
         {
             "startTimeNanos": IfitWorkoutJson.start,
-            "endTimeNanos": IfitWorkoutJson.end,
+            "endTimeNanos": IfitWorkoutJson.start,
             "dataTypeName": "com.google.calories.expended",
-            "value": [{"fpVal": IfitWorkoutJson.stats["summary"]["total_calories"]}],
+            "value": [{"fpVal": 0}],
         }
     )
     '''The below section commented out as Google Fit throws data out of range for some of the points, instead uploading totals for the workout'''
-    """
+
     for index, x in zip(
-        IfitWorkoutJson["stats"]["calories"], IfitWorkoutJson["stats"]["calories"][1:]
+        IfitWorkoutJson.lists["calories"], IfitWorkoutJson.lists["calories"][1:]
     ):
         google_datapoint["point"].append(
             {
                 "startTimeNanos": google_datapoint["point"][
                     len(google_datapoint["point"]) - 1
                 ]["endTimeNanos"],
-                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                "endTimeNanos": IfitWorkoutJson.start
                 + x["offset"] * 1000000,
                 "dataTypeName": "com.google.calories.expended",
                 "value": [{"fpVal": x["value"] - index["value"]}],
             }
         )
-    """
+
     datasetId = (
         str(google_datapoint["minStartTimeNs"])
         + "-"
@@ -501,27 +501,27 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
     google_datapoint["point"].append(
         {
             "startTimeNanos": IfitWorkoutJson.start,
-            "endTimeNanos": IfitWorkoutJson.end,
+            "endTimeNanos": IfitWorkoutJson.start + 1,
             "dataTypeName": "com.google.step_count.delta",
-            "value": [{"intVal": IfitWorkoutJson.stats["summary"]["total_steps"]}],
+            "value": [{"intVal": 0}],
         }
     )
-    """
+
     for index, x in zip(
-        IfitWorkoutJson["stats"]["steps"], IfitWorkoutJson["stats"]["steps"][1:]
+        IfitWorkoutJson.lists["steps"], IfitWorkoutJson.lists["steps"][1:]
     ):
         google_datapoint["point"].append(
             {
                 "startTimeNanos": google_datapoint["point"][
                     len(google_datapoint["point"]) - 1
                 ]["endTimeNanos"],
-                "endTimeNanos": IfitWorkoutJson["start"] * 1000000
+                "endTimeNanos": IfitWorkoutJson.start 
                 + x["offset"] * 1000000,
                 "dataTypeName": "com.google.step_count.delta",
                 "value": [{"intVal": (x["value"] - index["value"])}],
             }
         )
-    """
+
     datasetId = (
         str(google_datapoint["minStartTimeNs"])
         + "-"

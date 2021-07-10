@@ -39,9 +39,9 @@ Currently supports uploading the following:
 - Heart Rate which is sampled throughout the workout
 - Speed sampled throughout the workout
 - Power in watts sampled throughout the workout
-- Calories expended, this is uploaded as a total for the entire workout
+- Calories expended sampled throughout workout
 - Distance sampled throughout the workout
-- Step count, this is uploaded as a total for the entire workout
+- Step count sampled throughout workout
 - Workout name taken from iFit
 - Elevation Data in Meters (as a custom datatype)
 - Treadmill Incline Degrees (as a custom datatype)
