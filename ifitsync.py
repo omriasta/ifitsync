@@ -1,5 +1,5 @@
 from get_googleaccount import main
-from get_ifitaccount import FEED_JSON, HISTORY_JSON, IFIT_HIST_HEADERS
+from get_ifitaccount import HISTORY_JSON, IFIT_HIST_HEADERS
 from google_datasources import GOOGLE_DATA_SOURCES
 from googleapiclient.errors import HttpError
 import json
@@ -35,7 +35,7 @@ class HISTORY:
         self.total_steps = JSON["summary"]["total_steps"]
         self.total_meters = JSON["summary"]["total_meters"]
         self.total_calories = JSON["summary"]["total_calories"]
-        self.workout_json_url = "https://gateway.ifit.com/wolf-workouts-service/v1/post-workout/" + self.id + "?softwareNumber=424992&isMetric=false&locale=en-US&deviceType=tablet HTTP/1.1"
+        self.workout_json_url = "https://api.ifit.com/v1/workouts/" + self.workout_id 
         self.workout_details_json = http.get(self.workout_json_url, headers=IFIT_HIST_HEADERS).json()
         self.title = self.workout_details_json["title"]
         self.stats_url = "https://api.ifit.com/v1/activity_logs/" + self.id
@@ -349,11 +349,9 @@ def UploadIfitDistanceToGoogle(IfitWorkoutJson):
 def UploadIfitGPSToGoogle(IfitWorkoutJson):
     '''Function that uploads distance data from iFit workout to Google Fit'''
     '''Create a List with Coordinates and Distances correlating'''
-    WORKOUT_DETAILS_URL = "https://api.ifit.com/v1/workouts/" + IfitWorkoutJson.stats["workout_id"]
-    WORKOUT_DETAILS = http.get(WORKOUT_DETAILS_URL, headers=IFIT_HIST_HEADERS).json()
     COORDINATES_WITH_DISTANCE = []
     sum = 0
-    for coordinate, next_coordinate in zip(WORKOUT_DETAILS["geo"]["path"]["coordinates"], WORKOUT_DETAILS["geo"]["path"]["coordinates"][1:]):
+    for coordinate, next_coordinate in zip(IfitWorkoutJson.workout_details_json["geo"]["path"]["coordinates"], IfitWorkoutJson.workout_details_json["geo"]["path"]["coordinates"][1:]):
         distance_between_GPS = haversine(next_coordinate, coordinate)
         next_coordinate.append(distance_between_GPS)
         sum = sum + next_coordinate[2]
@@ -413,7 +411,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
             index_closest_value = ELEVATION_LIST.index(closest_value)
             x["elevation"] = ELEVATION_WITH_TIMESTAMP[index_closest_value]["elevation"]
 
-    if not WORKOUT_DETAILS["has_geo_data"]:
+    if not IfitWorkoutJson.workout_details_json["has_geo_data"]:
         print("No Geo Data for workout")
     else:
         google_datapoint = {}
@@ -430,7 +428,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
                 "endTimeNanos": IfitWorkoutJson.start
                 + IfitWorkoutJson.lists["meters"][0]["offset"] * 1000000,
                 "dataTypeName": "com.google.location.sample",
-                "value": [{"fpVal": WORKOUT_DETAILS["geo"]["path"]["coordinates"][0][1]},{"fpVal": WORKOUT_DETAILS["geo"]["path"]["coordinates"][0][0]}, {"fpVal": 5}, {"fpVal": 0}],
+                "value": [{"fpVal": IfitWorkoutJson.workout_details_json["geo"]["path"]["coordinates"][0][1]},{"fpVal": IfitWorkoutJson.workout_details_json["geo"]["path"]["coordinates"][0][0]}, {"fpVal": 5}, {"fpVal": 0}],
             }
         )
         if len(IfitWorkoutJson.lists["elevation"]) != 0:

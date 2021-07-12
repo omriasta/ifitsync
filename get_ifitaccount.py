@@ -13,7 +13,7 @@ import re
 retry_strategy = Retry(
     total=3,
     status_forcelist=[429, 500, 502, 503, 504],
-    method_whitelist=["HEAD", "GET", "OPTIONS"]
+    allowed_methods=["HEAD", "GET", "OPTIONS"]
 )
 adapter = HTTPAdapter(max_retries=retry_strategy)
 http = requests.Session()
@@ -130,13 +130,3 @@ IFIT_HIST_URL = "https://api.ifit.com/v1/activity_logs/" + "?platform=android&af
 
 IFIT_HIST = http.get(IFIT_HIST_URL, headers=IFIT_HIST_HEADERS)
 HISTORY_JSON = IFIT_HIST.json()
-
-IFIT_FEED_URL = (
-    "https://gateway.ifit.com/user-feed/v1/feed/user/"
-    + IFIT_USER_ID
-    + "?platform=android&after=&softwareNumber=424992&perPage=5"
-)
-
-IFIT_FEED = http.get(IFIT_FEED_URL, headers=IFIT_HIST_HEADERS)
-FEED_JSON = IFIT_FEED.json()
-
