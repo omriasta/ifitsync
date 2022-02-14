@@ -44,6 +44,7 @@ class HISTORY:
         self.end = self.stats["end"] * 1000000
         self.lists = self.stats["stats"]
         self.type = JSON["type"]
+        self.origin = JSON["origin"]
 
 
 def closest(lst, K): 
@@ -504,7 +505,7 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
             "value": [{"intVal": 0}],
         }
     )
-
+    '''
     for index, x in zip(
         IfitWorkoutJson.lists["steps"], IfitWorkoutJson.lists["steps"][1:]
     ):
@@ -519,7 +520,7 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
                 "value": [{"intVal": (x["value"] - index["value"])}],
             }
         )
-
+    '''
     datasetId = (
         str(google_datapoint["minStartTimeNs"])
         + "-"
@@ -685,7 +686,7 @@ else:
     last_run_time = 0
 for last_workout in HISTORY_JSON:
     y = HISTORY(last_workout)
-    if y.start_time > last_run_time:
+    if y.start_time > last_run_time and y.origin != "google-fit":
         UploadIfitCaloriesToGoogle(y)
         UploadIfitDistanceToGoogle(y)
         UploadIfitHrToGoogle(y)
