@@ -140,7 +140,7 @@ def UploadIfitHrToGoogle(IfitWorkoutJson):
         ).execute()
     except HttpError as error:
         raise error
-    print("Uploaded Workout HR data successfully")
+    print("Uploaded " + IfitWorkoutJson.title + " Workout HR data successfully")
     
 
 
@@ -190,7 +190,7 @@ def UploadIfitSpeedToGoogle(IfitWorkoutJson):
             ).execute()
     except HttpError as error:
         raise error
-    print("Uploaded Workout Speed data successfully")    
+    print("Uploaded " + IfitWorkoutJson.title + " Workout Speed data successfully")    
     
 
 
@@ -240,7 +240,7 @@ def UploadIfitWattsToGoogle(IfitWorkoutJson):
             ).execute()
     except HttpError as error:
         raise error
-    print("Uploaded Workout Power(watts) data successfully")
+    print("Uploaded " + IfitWorkoutJson.title + " Workout Power(watts) data successfully")
 
 
 
@@ -294,7 +294,7 @@ def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
             ).execute()
     except HttpError as error:
         raise error
-    print("Uploaded Workout Calorie data successfully")
+    print("Uploaded " + IfitWorkoutJson.title + " Workout Calorie data successfully")
 
 
 def UploadIfitDistanceToGoogle(IfitWorkoutJson):
@@ -345,7 +345,7 @@ def UploadIfitDistanceToGoogle(IfitWorkoutJson):
             ).execute()
     except HttpError as error:
         raise error
-    print("Uploaded Workout Distance data successfully")
+    print("Uploaded " + IfitWorkoutJson.title + " Workout Distance data successfully")
 
 def UploadIfitGPSToGoogle(IfitWorkoutJson):
     '''Function that uploads distance data from iFit workout to Google Fit'''
@@ -484,7 +484,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
                 ).execute()
         except HttpError as error:
             raise error
-        print("Uploaded Workout GPS data successfully")
+        print("Uploaded " + IfitWorkoutJson.title + " Workout GPS data successfully")
 
 
 def UploadIfitStepsToGoogle(IfitWorkoutJson):
@@ -536,7 +536,7 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
             ).execute()
     except HttpError as error:
         raise error
-    print("Uploaded Workout Steps data successfully")
+    print("Uploaded " + IfitWorkoutJson.title + " Workout Steps data successfully")
 
 
 def UploadIfitSessionToGoogle(IfitWorkoutJson):
@@ -557,7 +557,7 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
         service.users().sessions().update(userId="me", sessionId=IfitWorkoutJson.id, body=session_body,).execute()
     except HttpError as error:
         raise error
-    print("Uploaded Workout Session data successfully")
+    print("Uploaded " + IfitWorkoutJson.title + " Workout Session data successfully")
 
 def UploadIfitActivityToGoogle(IfitWorkoutJson):
     '''This function populates the Active Time for the Google Fit Workout created'''
@@ -595,7 +595,7 @@ def UploadIfitActivityToGoogle(IfitWorkoutJson):
         ).execute()
     except HttpError as error:
         raise error
-    print("Uploaded Workout Activity data successfully")
+    print("Uploaded " + IfitWorkoutJson.title + " Workout Activity data successfully")
 def UploadIfitInclineToGoogle(IfitWorkoutJson):
     '''Function to Upload Incline data from iFit to Google Fit'''
     google_datapoint = {}
@@ -632,7 +632,7 @@ def UploadIfitInclineToGoogle(IfitWorkoutJson):
             ).execute()
     except HttpError as error:
         raise error
-    print("Uploaded Workout Incline data successfully")    
+    print("Uploaded " + IfitWorkoutJson.title + " Workout Incline data successfully")    
 
 def UploadIfitElevationToGoogle(IfitWorkoutJson):
     '''Function to Upload Elevation data from iFit to Google Fit'''
@@ -670,7 +670,7 @@ def UploadIfitElevationToGoogle(IfitWorkoutJson):
             ).execute()
     except HttpError as error:
         raise error
-    print("Uploaded Workout Elevation data successfully")   
+    print("Uploaded " + IfitWorkoutJson.title + " Workout Elevation data successfully")   
 
 """ Check if the Google Data Sources don't exist and create them"""
 for x in GOOGLE_DATA_SOURCES:
