@@ -257,12 +257,12 @@ def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
     google_datapoint["point"].append(
         {
             "startTimeNanos": IfitWorkoutJson.start,
-            "endTimeNanos": IfitWorkoutJson.start,
+            "endTimeNanos": IfitWorkoutJson.end,
             "dataTypeName": "com.google.calories.expended",
-            "value": [{"fpVal": 0}],
+            "value": [{"fpVal": IfitWorkoutJson.total_calories}],
         }
     )
-    '''The below section commented out as Google Fit throws data out of range for some of the points, instead uploading totals for the workout'''
+    '''The below section commented out as Google Fit throws data out of range for some of the points, instead uploading totals for the workout
 
     for index, x in zip(
         IfitWorkoutJson.lists["calories"], IfitWorkoutJson.lists["calories"][1:]
@@ -278,7 +278,7 @@ def UploadIfitCaloriesToGoogle(IfitWorkoutJson):
                 "value": [{"fpVal": x["value"] - index["value"]}],
             }
         )
-
+    '''
     datasetId = (
         str(google_datapoint["minStartTimeNs"])
         + "-"
@@ -437,7 +437,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
                 google_datapoint["point"].append(
                     {
                         "startTimeNanos": x["timestamp"],
-                        "endTimeNanos": x["timestamp"] + 1,
+                        "endTimeNanos": x["timestamp"],
                         "dataTypeName": "com.google.location.sample",
                         "value": [{"fpVal": x["latitude"]}, {"fpVal": x["longitude"]}, {"fpVal": 5}, {"fpVal": x["elevation"]}],
                     }
@@ -455,7 +455,7 @@ def UploadIfitGPSToGoogle(IfitWorkoutJson):
                 google_datapoint["point"].append(
                     {
                         "startTimeNanos": x["timestamp"],
-                        "endTimeNanos": x["timestamp"] + 1,
+                        "endTimeNanos": x["timestamp"],
                         "dataTypeName": "com.google.location.sample",
                         "value": [{"fpVal": x["latitude"]}, {"fpVal": x["longitude"]}, {"fpVal": 5}],
                     }
@@ -500,9 +500,9 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
     google_datapoint["point"].append(
         {
             "startTimeNanos": IfitWorkoutJson.start,
-            "endTimeNanos": IfitWorkoutJson.start + 1,
+            "endTimeNanos": IfitWorkoutJson.end,
             "dataTypeName": "com.google.step_count.delta",
-            "value": [{"intVal": 0}],
+            "value": [{"intVal": IfitWorkoutJson.total_steps}],
         }
     )
     '''
