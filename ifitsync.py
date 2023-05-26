@@ -543,6 +543,8 @@ def UploadIfitSessionToGoogle(IfitWorkoutJson):
     '''Function that creates a workout on Google Fit and gives it a name and the activity type'''
     if IfitWorkoutJson.type == "run":
         fit_activity_type = 8
+    if IfitWorkoutJson.type == "cycle":
+        fit_activity_type = 1
     session_body = {}
     session_body.update(
         id=IfitWorkoutJson.id,
@@ -563,6 +565,8 @@ def UploadIfitActivityToGoogle(IfitWorkoutJson):
     '''This function populates the Active Time for the Google Fit Workout created'''
     if IfitWorkoutJson.type == "run":
         fit_activity_type = 8
+    if IfitWorkoutJson.type == "cycle":
+        fit_activity_type = 1 
     google_datapoint = {}
     google_datapoint.update(
         minStartTimeNs=IfitWorkoutJson.start,
