@@ -496,7 +496,9 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
         dataSourceId=GOOGLE_DATA_SOURCES[5]["datasourceid"],
         point=[],
     )
-
+    if IfitWorkoutJson.total_steps == 0:
+      IfitWorkoutJson.total_steps = round(IfitWorkoutJson.total_meters * 1.403)
+      print(IfitWorkoutJson.total_steps)
     google_datapoint["point"].append(
         {
             "startTimeNanos": IfitWorkoutJson.start,
@@ -537,6 +539,7 @@ def UploadIfitStepsToGoogle(IfitWorkoutJson):
     except HttpError as error:
         raise error
     print("Uploaded " + IfitWorkoutJson.title + " Workout Steps data successfully")
+
 
 
 def UploadIfitSessionToGoogle(IfitWorkoutJson):
