@@ -132,6 +132,7 @@ dmypy.json
 credentials.json
 const.py
 ifit-credentials.json
+ifit-credentials.json.bak
 token.pickle
 last_run_time.json
 test.py
